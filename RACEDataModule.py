@@ -4,7 +4,7 @@ from typing import Optional
 
 import torch
 import pytorch_lightning as pl
-from torch.utils.data import TensorDataset, DataLoader, RandomSampler, SequentialSampler
+from torch.utils.data import TensorDataset, DataLoader, RandomSampler
 from tqdm import tqdm
 from transformers import BertTokenizer
 
