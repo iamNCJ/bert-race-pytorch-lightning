@@ -8,15 +8,15 @@ class BertForRace(pl.LightningModule):
         self.config = AutoConfig.from_pretrained(pretrained_model, num_choices=4)
         print(self.config)
         self.bert_model = BertForMultipleChoice.from_pretrained(pretrained_model, config=self.config)
-        print(self.bert_model.named_parameters())
-        param_optimizer = list(self.bert_model.named_parameters())
-        print(len(param_optimizer))
+        # print(self.bert_model.named_parameters())
+        # param_optimizer = list(self.bert_model.named_parameters())
+        # print(len(param_optimizer))
         self.learning_rate = learning_rate
 
         # hack to remove pooler, which is not used
         # thus it produce None grad that break apex
-        param_optimizer = [n for n in param_optimizer if 'pooler' not in n[0]]
-        print(len(param_optimizer))
+        # param_optimizer = [n for n in param_optimizer if 'pooler' not in n[0]]
+        # print(len(param_optimizer))
 
     def configure_optimizers(self):
         # Prepare optimizer
@@ -48,6 +48,7 @@ class BertForRace(pl.LightningModule):
         }
         return [optimizer], [scheduler]
         # return optimizer
+
 
 if __name__ == '__main__':
     model = BertForRace(pretrained_model="bert-large-uncased")
