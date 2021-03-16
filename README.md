@@ -18,8 +18,9 @@ You need to install `apex` separately
  - [ ] Refactor RACE Dataset Loader
    - [x] Use `datasets` from `transformer`
    - [x] Better Interface and Format
-   - [x] Faster Data Loading
-   - [ ] Cache Tokenized Results
+   - [x] Faster Data Loading (using Rust)
+   - [x] Cache Tokenized Results
+   - [ ] Custom Datasets
  - [ ] Apex
  - [ ] Optuna
  - [ ] Parallelism

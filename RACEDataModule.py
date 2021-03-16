@@ -1,31 +1,14 @@
-import glob
-import json
 from functools import partial
 from typing import Optional, Dict
 
 import torch
 import pytorch_lightning as pl
 from torch.utils.data import TensorDataset, DataLoader, RandomSampler, SequentialSampler
-from tqdm import tqdm
 from transformers import BertTokenizerFast
 import datasets
 
 
 class RACEDataModule(pl.LightningDataModule):
-    task_text_field_map = {
-        'all': ['article', 'question', 'options']
-    }
-
-    loader_columns = [
-        'datasets_idx',
-        'input_ids',
-        'token_type_ids',
-        'attention_mask',
-        'start_positions',
-        'end_positions',
-        'labels'
-    ]
-
     def __init__(
             self,
             model_name_or_path: str = 'bert-large-uncased',
@@ -43,12 +26,10 @@ class RACEDataModule(pl.LightningDataModule):
         self.eval_batch_size = eval_batch_size
         self.cache_dir = './'
 
-        self.text_fields = self.task_text_field_map[task_name]
         self.tokenizer = BertTokenizerFast.from_pretrained(self.model_name_or_path, use_fast=True)
 
     def setup(self, stage: Optional[str] = None):
         self.dataset = datasets.load_dataset('race', self.task_name)
-        print(self.dataset['train'])
         preprocessor = partial(self.preprocess, self.tokenizer)
 
         for split in self.dataset.keys():
@@ -141,31 +122,7 @@ class RACEDataModule(pl.LightningDataModule):
             "token_type_ids": torch.tensor([cf["token_type_ids"] for cf in choices_features]),
         }
 
-    # def convert_to_features(self, example_batch, indices=None):
-    #
-    #     # Either encode single sentence or sentence pairs
-    #     if len(self.text_fields) > 1:
-    #         texts_or_text_pairs = list(zip(example_batch[self.text_fields[0]], example_batch[self.text_fields[1]]))
-    #     else:
-    #         texts_or_text_pairs = example_batch[self.text_fields[0]]
-    #
-    #     # Tokenize the text/text pairs
-    #     features = self.tokenizer.batch_encode_plus(
-    #         texts_or_text_pairs,
-    #         max_length=self.max_seq_length,
-    #         pad_to_max_length=True,
-    #         truncation=True
-    #     )
-    #
-    #     # Rename label to labels to make it easier to pass to model forward
-    #     features['labels'] = example_batch['label']
-    #
-    #     return features
-
 
 if __name__ == '__main__':
-    # with open('./RACE/train/middle/2.txt') as f:
-    #     data = json.load(f)
-    #     print(data)
     dm = RACEDataModule()
     dm.setup('train')
