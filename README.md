@@ -7,6 +7,10 @@
 
  - [x] PyTorch Lightening
  - [x] Transformer
+ - [ ] Refactor RACE Dataset Loader
+   - [ ] Better Interface and Format
+   - [ ] Faster Data Loading
+   - [ ] Cache Tokenized Results
  - [ ] Apex
  - [ ] Optuna
  - [ ] Parallelism

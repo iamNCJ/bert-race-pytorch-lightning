@@ -118,3 +118,6 @@ dmypy.json
 
 # Datasets
 RACE
+
+# pytorch lightening logs
+lightning_logs

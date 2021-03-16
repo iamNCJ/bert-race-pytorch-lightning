@@ -204,15 +204,11 @@ class RACEDataModule(pl.LightningDataModule):
                  train_dir,
                  do_lower_case=False,
                  max_seq_length=128,
-                 train_batch_size=32,
-                 gradient_accumulation_steps=1,
-                 num_train_epochs=3.0):
+                 train_batch_size=32):
         super().__init__()
         self.tokenizer = BertTokenizer.from_pretrained("bert-large-uncased", do_lower_case=do_lower_case)
         self.max_seq_length = max_seq_length
         self.train_batch_size = train_batch_size
-        self.gradient_accumulation_steps = gradient_accumulation_steps
-        self.num_train_epochs = num_train_epochs
         self.data_dir = train_dir
 
         self.train_data = None
@@ -224,9 +220,8 @@ class RACEDataModule(pl.LightningDataModule):
 
     # on all nodes
     def setup(self, stage: Optional[str] = None):
+        print('dm setup()')
         train_examples = read_race_examples([self.data_dir + '/high', self.data_dir + '/middle'])
-        num_train_steps = int(
-            len(train_examples) / self.train_batch_size / self.gradient_accumulation_steps * self.num_train_epochs)
         train_features = convert_examples_to_features(train_examples, self.tokenizer, self.max_seq_length, True)
         train_input_ids = torch.tensor(select_field(train_features, 'input_ids'), dtype=torch.long)
         train_input_mask = torch.tensor(select_field(train_features, 'input_mask'), dtype=torch.long)

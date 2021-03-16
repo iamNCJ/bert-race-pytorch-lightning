@@ -4,20 +4,33 @@ from RACEDataModule import RACEDataModule
 
 
 class BertForRace(pl.LightningModule):
-    def __init__(self, pretrained_model, learning_rate=0.01):
+    def __init__(self,
+                 pretrained_model,
+                 learning_rate=0.01,
+                 gradient_accumulation_steps=1,
+                 num_train_epochs=3.0,
+                 train_batch_size=32):
         super().__init__()
         self.config = BertConfig.from_pretrained(pretrained_model, num_choices=4)
         print(self.config)
         self.bert_model = BertForMultipleChoice.from_pretrained(pretrained_model, config=self.config)
-        # print(self.bert_model.named_parameters())
-        # param_optimizer = list(self.bert_model.named_parameters())
-        # print(len(param_optimizer))
-        self.learning_rate = learning_rate
 
-        # hack to remove pooler, which is not used
-        # thus it produce None grad that break apex
-        # param_optimizer = [n for n in param_optimizer if 'pooler' not in n[0]]
-        # print(len(param_optimizer))
+        self.learning_rate = learning_rate
+        self.gradient_accumulation_steps = gradient_accumulation_steps
+        self.num_train_epochs = num_train_epochs
+        self.train_batch_size = train_batch_size
+
+        self.warmup_steps = 10
+        self.total_steps = 0
+
+    def setup(self, stage: str) -> None:
+        if stage == 'fit':
+            # Get dataloader by calling it - train_dataloader() is called after setup() by default
+            train_loader = self.train_dataloader()
+
+            # Calculate total steps
+            self.total_steps = int(len(train_loader.dataset)
+                                   / self.train_batch_size / self.gradient_accumulation_steps * self.num_train_epochs)
 
     def configure_optimizers(self):
         # Prepare optimizer
@@ -35,12 +48,10 @@ class BertForRace(pl.LightningModule):
         # t_total = num_train_steps
         optimizer = AdamW(optimizer_grouped_parameters,
                           lr=self.learning_rate,
-                          # warmup=args.warmup_proportion,
-                          # t_total=t_total
                           )
 
         scheduler = get_linear_schedule_with_warmup(
-            optimizer, num_warmup_steps=self.hparams.warmup_steps, num_training_steps=self.total_steps
+            optimizer, num_warmup_steps=self.warmup_steps, num_training_steps=self.total_steps
         )
         scheduler = {
             'scheduler': scheduler,
@@ -51,11 +62,11 @@ class BertForRace(pl.LightningModule):
         # return optimizer
 
     def forward(self, **inputs):
-        return self.model(**inputs)
+        return self.bert_model(**inputs)
 
     def training_step(self, batch, batch_idx):
-        outputs = self(**batch)
-        loss = outputs[0]
+        input_ids, input_mask, segment_ids, label_ids = batch
+        loss = self.bert_model(input_ids, segment_ids, input_mask, label_ids)
         return loss
 
 
