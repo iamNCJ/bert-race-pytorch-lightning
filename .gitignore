@@ -116,6 +116,9 @@ dmypy.json
 # PyCharm
 .idea
 
+# macOS
+.DS_Store
+
 # Datasets
 RACE
 
