@@ -5,8 +5,8 @@
 
 ## TODO
 
- - [ ] PyTorch Lightening
- - [ ] Transformer
+ - [x] PyTorch Lightening
+ - [x] Transformer
  - [ ] Apex
  - [ ] Optuna
  - [ ] Parallelism

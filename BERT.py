@@ -1,11 +1,12 @@
 import pytorch_lightning as pl
-from transformers import AutoConfig, BertForMultipleChoice, AdamW, get_linear_schedule_with_warmup
+from transformers import BertConfig, BertForMultipleChoice, AdamW, get_linear_schedule_with_warmup
+from RACEDataModule import RACEDataModule
 
 
 class BertForRace(pl.LightningModule):
     def __init__(self, pretrained_model, learning_rate=0.01):
         super().__init__()
-        self.config = AutoConfig.from_pretrained(pretrained_model, num_choices=4)
+        self.config = BertConfig.from_pretrained(pretrained_model, num_choices=4)
         print(self.config)
         self.bert_model = BertForMultipleChoice.from_pretrained(pretrained_model, config=self.config)
         # print(self.bert_model.named_parameters())
@@ -49,6 +50,17 @@ class BertForRace(pl.LightningModule):
         return [optimizer], [scheduler]
         # return optimizer
 
+    def forward(self, **inputs):
+        return self.model(**inputs)
+
+    def training_step(self, batch, batch_idx):
+        outputs = self(**batch)
+        loss = outputs[0]
+        return loss
+
 
 if __name__ == '__main__':
     model = BertForRace(pretrained_model="bert-large-uncased")
+    dm = RACEDataModule('./RACE/train')
+    trainer = pl.Trainer(gpus=1)
+    trainer.fit(model, dm)
