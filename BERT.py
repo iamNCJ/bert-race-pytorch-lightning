@@ -74,7 +74,7 @@ class BertForRace(pl.LightningModule):
             attention_mask=batch['attention_mask'].reshape(batch['attention_mask'].shape[0], 4, -1),
             labels=batch['label'],
         )
-        return loss
+        return loss[0]
 
 
 if __name__ == '__main__':
