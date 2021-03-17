@@ -33,24 +33,15 @@ class RACEDataModule(pl.LightningDataModule):
         self.dataset = datasets.load_dataset('race', self.task_name)
         preprocessor = partial(self.preprocess, self.tokenizer, self.max_seq_length)
 
-        if stage is None:
-            for split in self.dataset.keys():
-                self.dataset[split] = self.dataset[split].map(
-                    preprocessor,
-                    # batched=True,
-                    remove_columns=['example_id'],
-                )
-                self.dataset[split].set_format(type='torch',
-                                               columns=['input_ids', 'token_type_ids', 'attention_mask', 'label'])
-                # self.dataset[split] = torch.utils.data.DataLoader(self.dataset[split])
-        else:
-            self.dataset[stage] = self.dataset[stage].map(
+        for split in self.dataset.keys():
+            self.dataset[split] = self.dataset[split].map(
                 preprocessor,
                 # batched=True,
                 remove_columns=['example_id'],
             )
-            self.dataset[stage].set_format(type='torch',
+            self.dataset[split].set_format(type='torch',
                                            columns=['input_ids', 'token_type_ids', 'attention_mask', 'label'])
+            # self.dataset[split] = torch.utils.data.DataLoader(self.dataset[split])
 
     def prepare_data(self):
         datasets.load_dataset('race', self.task_name)
