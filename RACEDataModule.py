@@ -24,22 +24,24 @@ class RACEDataModule(pl.LightningDataModule):
         self.max_seq_length = max_seq_length
         self.train_batch_size = train_batch_size
         self.eval_batch_size = eval_batch_size
-        self.cache_dir = './'
+        # self.cache_dir = './'
 
         self.tokenizer = BertTokenizerFast.from_pretrained(self.model_name_or_path, use_fast=True)
+        self.dataset = None
 
     def setup(self, stage: Optional[str] = None):
         self.dataset = datasets.load_dataset('race', self.task_name)
-        preprocessor = partial(self.preprocess, self.tokenizer)
+        preprocessor = partial(self.preprocess, self.tokenizer, self.max_seq_length)
 
         for split in self.dataset.keys():
             self.dataset[split] = self.dataset[split].map(
                 preprocessor,
                 # batched=True,
                 remove_columns=['example_id'],
-            )  # .save(self.cache_dir / "train.cache")
-
-        self.eval_splits = [x for x in self.dataset.keys() if 'validation' in x]
+            )
+            self.dataset[split].set_format(type='torch',
+                                           columns=['input_ids', 'token_type_ids', 'attention_mask', 'label'])
+            # self.dataset[split] = torch.utils.data.DataLoader(self.dataset[split])
 
     def prepare_data(self):
         datasets.load_dataset('race', self.task_name)
@@ -51,31 +53,25 @@ class RACEDataModule(pl.LightningDataModule):
                           batch_size=self.train_batch_size)
 
     def val_dataloader(self):
-        if len(self.eval_splits) == 1:
-            return DataLoader(self.dataset['validation'],
-                              sampler=SequentialSampler(self.dataset['validation']),
-                              batch_size=self.eval_batch_size)
-        elif len(self.eval_splits) > 1:
-            return [DataLoader(self.dataset[x],
-                               sampler=SequentialSampler(self.dataset[x]),
-                               batch_size=self.eval_batch_size) for x in self.eval_splits]
+        return DataLoader(self.dataset['validation'],
+                          sampler=SequentialSampler(self.dataset['validation']),
+                          batch_size=self.eval_batch_size)
 
     def test_dataloader(self):
-        if len(self.eval_splits) == 1:
-            return DataLoader(self.dataset['test'],
-                              sampler=SequentialSampler(self.dataset['test']),
-                              batch_size=self.eval_batch_size)
-        elif len(self.eval_splits) > 1:
-            return [DataLoader(self.dataset[x],
-                               sampler=SequentialSampler(self.dataset[x]),
-                               batch_size=self.eval_batch_size) for x in self.eval_splits]
+        return DataLoader(self.dataset['test'],
+                          sampler=SequentialSampler(self.dataset['test']),
+                          batch_size=self.eval_batch_size)
 
+    # auto cache tokens
     @staticmethod
-    def preprocess(tokenizer: BertTokenizerFast, x: Dict) -> Dict:
+    def preprocess(tokenizer: BertTokenizerFast, max_seq_length: int, x: Dict) -> Dict:
         choices_features = []
-        MAX_LEN = 128
+        max_len = max_seq_length
         label_map = {"A": 0, "B": 1, "C": 2, "D": 3}
 
+        # The input will be like:
+        # [CLS] Article [SEP] Question + Option [SEP]
+        # for each option
         option: str
         for option in x["options"]:
             text_a = x["article"]
@@ -88,22 +84,23 @@ class RACEDataModule(pl.LightningDataModule):
                 text_a,
                 text_b,
                 add_special_tokens=True,
-                max_length=MAX_LEN
+                max_length=max_len,
+                truncation=True
             )
             input_ids, token_type_ids = inputs["input_ids"], inputs["token_type_ids"]
             attention_mask = [1] * len(input_ids)
 
             pad_token_id = tokenizer.pad_token_id
-            padding_length = MAX_LEN - len(input_ids)
+            padding_length = max_len - len(input_ids)
             input_ids = input_ids + ([pad_token_id] * padding_length)
             attention_mask = attention_mask + ([0] * padding_length)
             token_type_ids = token_type_ids + ([pad_token_id] * padding_length)
 
-            assert len(input_ids) == MAX_LEN, "Error with input length {} vs {}".format(len(input_ids), MAX_LEN)
-            assert len(attention_mask) == MAX_LEN, "Error with input length {} vs {}".format(len(attention_mask),
-                                                                                             MAX_LEN)
-            assert len(token_type_ids) == MAX_LEN, "Error with input length {} vs {}".format(len(token_type_ids),
-                                                                                             MAX_LEN)
+            assert len(input_ids) == max_len, "Error with input length {} vs {}".format(len(input_ids), max_len)
+            assert len(attention_mask) == max_len, "Error with input length {} vs {}".format(len(attention_mask),
+                                                                                             max_len)
+            assert len(token_type_ids) == max_len, "Error with input length {} vs {}".format(len(token_type_ids),
+                                                                                             max_len)
 
             choices_features.append({
                 "input_ids": input_ids,
