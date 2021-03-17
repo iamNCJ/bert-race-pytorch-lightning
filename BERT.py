@@ -77,5 +77,5 @@ class BertForRace(pl.LightningModule):
 if __name__ == '__main__':
     model = BertForRace(pretrained_model="bert-large-uncased")
     dm = RACEDataModule()
-    trainer = pl.Trainer(gpus=0)
+    trainer = pl.Trainer(gpus=1)
     trainer.fit(model, dm)
