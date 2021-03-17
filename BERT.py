@@ -66,9 +66,9 @@ class BertForRace(pl.LightningModule):
 
     def training_step(self, batch, batch_idx):
         loss = self.bert_model(
-            input_ids=batch['input_ids'],
-            token_type_ids=batch['token_type_ids'],
-            attention_mask=batch['attention_mask'],
+            input_ids=batch['input_ids'].reshape(batch['input_ids'].shape[0], 4, -1),
+            token_type_ids=batch['token_type_ids'].reshape(batch['token_type_ids'].shape[0], 4, -1),
+            attention_mask=batch['attention_mask'].reshape(batch['attention_mask'].shape[0], 4, -1),
             labels=batch['label'],
         )
         return loss

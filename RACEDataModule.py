@@ -33,15 +33,24 @@ class RACEDataModule(pl.LightningDataModule):
         self.dataset = datasets.load_dataset('race', self.task_name)
         preprocessor = partial(self.preprocess, self.tokenizer, self.max_seq_length)
 
-        for split in self.dataset.keys():
-            self.dataset[split] = self.dataset[split].map(
+        if stage is None:
+            for split in self.dataset.keys():
+                self.dataset[split] = self.dataset[split].map(
+                    preprocessor,
+                    # batched=True,
+                    remove_columns=['example_id'],
+                )
+                self.dataset[split].set_format(type='torch',
+                                               columns=['input_ids', 'token_type_ids', 'attention_mask', 'label'])
+                # self.dataset[split] = torch.utils.data.DataLoader(self.dataset[split])
+        else:
+            self.dataset[stage] = self.dataset[stage].map(
                 preprocessor,
                 # batched=True,
                 remove_columns=['example_id'],
             )
-            self.dataset[split].set_format(type='torch',
+            self.dataset[stage].set_format(type='torch',
                                            columns=['input_ids', 'token_type_ids', 'attention_mask', 'label'])
-            # self.dataset[split] = torch.utils.data.DataLoader(self.dataset[split])
 
     def prepare_data(self):
         datasets.load_dataset('race', self.task_name)
@@ -82,41 +91,24 @@ class RACEDataModule(pl.LightningDataModule):
                 text_b,
                 add_special_tokens=True,
                 max_length=max_len,
-                truncation=True
+                truncation=True,
+                padding='max_length',
             )
-            input_ids, token_type_ids = inputs["input_ids"], inputs["token_type_ids"]
-            attention_mask = [1] * len(input_ids)
-
-            pad_token_id = tokenizer.pad_token_id
-            padding_length = max_len - len(input_ids)
-            input_ids = input_ids + ([pad_token_id] * padding_length)
-            attention_mask = attention_mask + ([0] * padding_length)
-            token_type_ids = token_type_ids + ([pad_token_id] * padding_length)
-
-            assert len(input_ids) == max_len, "Error with input length {} vs {}".format(len(input_ids), max_len)
-            assert len(attention_mask) == max_len, "Error with input length {} vs {}".format(len(attention_mask),
-                                                                                             max_len)
-            assert len(token_type_ids) == max_len, "Error with input length {} vs {}".format(len(token_type_ids),
-                                                                                             max_len)
-
-            choices_features.append({
-                "input_ids": input_ids,
-                "attention_mask": attention_mask,
-                "token_type_ids": token_type_ids,
-            })
+            choices_features.append(inputs)
 
         labels = label_map.get(x["answer"], -1)
         label = torch.tensor(labels).long()
 
         return {
-            "id": x["example_id"],
             "label": label,
-            "input_ids": torch.tensor([cf["input_ids"] for cf in choices_features]),
-            "attention_mask": torch.tensor([cf["attention_mask"] for cf in choices_features]),
-            "token_type_ids": torch.tensor([cf["token_type_ids"] for cf in choices_features]),
+            "input_ids": torch.tensor([cf["input_ids"] for cf in choices_features]).reshape(-1),
+            "attention_mask": torch.tensor([cf["attention_mask"] for cf in choices_features]).reshape(-1),
+            "token_type_ids": torch.tensor([cf["token_type_ids"] for cf in choices_features]).reshape(-1),
         }
 
 
 if __name__ == '__main__':
     dm = RACEDataModule()
     dm.setup('train')
+    d = (next(iter(dm.train_dataloader())))
+    print(d)
