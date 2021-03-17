@@ -16,6 +16,9 @@ class BertForRace(pl.LightningModule):
         print(self.config)
         self.bert_model = BertForMultipleChoice.from_pretrained(pretrained_model, config=self.config)
 
+        for param in self.bert_model.bert.parameters():
+            param.requires_grad = False
+
         self.learning_rate = learning_rate
         self.gradient_accumulation_steps = gradient_accumulation_steps
         self.num_train_epochs = num_train_epochs
