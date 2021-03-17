@@ -69,9 +69,6 @@ class RACEDataModule(pl.LightningDataModule):
         max_len = max_seq_length
         label_map = {"A": 0, "B": 1, "C": 2, "D": 3}
 
-        # The input will be like:
-        # [CLS] Article [SEP] Question + Option [SEP]
-        # for each option
         option: str
         for option in x["options"]:
             text_a = x["article"]
