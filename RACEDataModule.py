@@ -41,6 +41,7 @@ class RACEDataModule(pl.LightningDataModule):
                 # batched=True,
                 remove_columns=['example_id'],
                 num_proc=8,
+                keep_in_memory=True,
             )
             self.dataset[split].set_format(type='torch',
                                            columns=['input_ids', 'token_type_ids', 'attention_mask', 'label'])
