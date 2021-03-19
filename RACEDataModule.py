@@ -16,6 +16,7 @@ class RACEDataModule(pl.LightningDataModule):
             max_seq_length: int = 128,
             train_batch_size: int = 32,
             eval_batch_size: int = 32,
+            num_workers: int = 8,
             **kwargs
     ):
         super().__init__()
@@ -24,6 +25,7 @@ class RACEDataModule(pl.LightningDataModule):
         self.max_seq_length = max_seq_length
         self.train_batch_size = train_batch_size
         self.eval_batch_size = eval_batch_size
+        self.num_workers = num_workers
         # self.cache_dir = './'
 
         self.tokenizer = BertTokenizerFast.from_pretrained(self.model_name_or_path, use_fast=True)
@@ -38,6 +40,7 @@ class RACEDataModule(pl.LightningDataModule):
                 preprocessor,
                 # batched=True,
                 remove_columns=['example_id'],
+                num_proc=8,
             )
             self.dataset[split].set_format(type='torch',
                                            columns=['input_ids', 'token_type_ids', 'attention_mask', 'label'])
@@ -50,17 +53,20 @@ class RACEDataModule(pl.LightningDataModule):
     def train_dataloader(self):
         return DataLoader(self.dataset['train'],
                           sampler=RandomSampler(self.dataset['train']),
-                          batch_size=self.train_batch_size)
+                          batch_size=self.train_batch_size,
+                          num_workers=self.num_workers)
 
     def val_dataloader(self):
         return DataLoader(self.dataset['validation'],
                           sampler=SequentialSampler(self.dataset['validation']),
-                          batch_size=self.eval_batch_size)
+                          batch_size=self.eval_batch_size,
+                          num_workers=self.num_workers)
 
     def test_dataloader(self):
         return DataLoader(self.dataset['test'],
                           sampler=SequentialSampler(self.dataset['test']),
-                          batch_size=self.eval_batch_size)
+                          batch_size=self.eval_batch_size,
+                          num_workers=self.num_workers)
 
     # auto cache tokens
     @staticmethod
