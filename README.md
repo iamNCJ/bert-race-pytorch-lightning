@@ -15,13 +15,14 @@ You need to install `apex` separately
 
  - [x] PyTorch Lightening
  - [x] Transformer
- - [ ] Refactor RACE Dataset Loader
+ - [x] Refactor RACE Dataset Loader
    - [x] Use `datasets` from `transformer`
    - [x] Better Interface and Format
-   - [x] Faster Data Loading (using Rust)
+   - [x] Faster Data Loading (using Rust & multi-process)
    - [x] Cache Tokenized Results
-   - [ ] Custom Datasets
- - [ ] Apex
+   - [x] Custom Datasets (Local Loading)
+ - [x] Mix Precision Training (~~Apex~~)
+ - [ ] TensorBoard
  - [ ] Optuna
  - [ ] Parallelism
  - [ ] Distributed
