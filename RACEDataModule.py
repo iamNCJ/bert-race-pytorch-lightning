@@ -11,7 +11,7 @@ import datasets
 class RACEDataModule(pl.LightningDataModule):
     def __init__(
             self,
-            model_name_or_path: str = 'bert-large-uncased',
+            model_name_or_path: str = './bert-large-uncased',
             task_name: str = 'all',
             max_seq_length: int = 128,
             train_batch_size: int = 32,
@@ -28,11 +28,14 @@ class RACEDataModule(pl.LightningDataModule):
         self.num_workers = num_workers
         # self.cache_dir = './'
 
-        self.tokenizer = BertTokenizerFast.from_pretrained(self.model_name_or_path, use_fast=True)
+        # self.tokenizer = BertTokenizerFast.from_pretrained(self.model_name_or_path, use_fast=True)
+        self.tokenizer = BertTokenizerFast("./bert-large-uncased-vocab.txt", use_fast=True)
         self.dataset = None
 
     def setup(self, stage: Optional[str] = None):
-        self.dataset = datasets.load_dataset('race', self.task_name)
+        # self.dataset = datasets.load_dataset('race', self.task_name) # Load from Online dataset
+        self.dataset = datasets.load_dataset('./Load_race.py', self.task_name) # Load from Local Scripts
+
         preprocessor = partial(self.preprocess, self.tokenizer, self.max_seq_length)
 
         for split in self.dataset.keys():
@@ -48,8 +51,10 @@ class RACEDataModule(pl.LightningDataModule):
             # self.dataset[split] = torch.utils.data.DataLoader(self.dataset[split])
 
     def prepare_data(self):
-        datasets.load_dataset('race', self.task_name)
-        BertTokenizerFast.from_pretrained(self.model_name_or_path, use_fast=True)
+        # datasets.load_dataset('race', self.task_name) # Load from Online dataset
+        # BertTokenizerFast.from_pretrained(self.model_name_or_path, use_fast=True)
+        datasets.load_dataset('./Load_race.py', self.task_name) # Load from Local Scripts
+        BertTokenizerFast("./bert-large-uncased-vocab.txt", use_fast=True)
 
     def train_dataloader(self):
         return DataLoader(self.dataset['train'],

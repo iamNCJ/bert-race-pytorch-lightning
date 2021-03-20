@@ -12,7 +12,7 @@ class BertForRace(pl.LightningModule):
                  num_train_epochs=3.0,
                  train_batch_size=32):
         super().__init__()
-        self.config = BertConfig.from_pretrained(pretrained_model, num_choices=4)
+        self.config = BertConfig.from_pretrained(pretrained_model+'/bert_config.json', num_choices=4)
         print(self.config)
         self.bert_model = BertForMultipleChoice.from_pretrained(pretrained_model, config=self.config)
 
@@ -78,7 +78,7 @@ class BertForRace(pl.LightningModule):
 
 
 if __name__ == '__main__':
-    model = BertForRace(pretrained_model="bert-large-uncased")
+    model = BertForRace(pretrained_model="./bert-large-uncased/")
     dm = RACEDataModule()
     trainer = pl.Trainer(gpus=1, amp_level='O2', precision=16, max_epochs=10)
     trainer.fit(model, dm)
