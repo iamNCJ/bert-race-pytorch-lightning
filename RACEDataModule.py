@@ -1,40 +1,41 @@
 from functools import partial
 from typing import Optional, Dict
 
-import torch
-import pytorch_lightning as pl
-from torch.utils.data import TensorDataset, DataLoader, RandomSampler, SequentialSampler
-from transformers import BertTokenizerFast
 import datasets
+import pytorch_lightning as pl
+import torch
+from torch.utils.data import DataLoader, RandomSampler, SequentialSampler
+from transformers import BertTokenizerFast
 
 
 class RACEDataModule(pl.LightningDataModule):
     def __init__(
             self,
-            model_name_or_path: str = './bert-large-uncased',
+            vocal_model_name_or_path: str = 'bert-large-uncased',  # './bert-large-uncased-vocab.txt'
+            datasets_loader: str = 'race',  # 'RACELocalLoader.py'
             task_name: str = 'all',
             max_seq_length: int = 128,
             train_batch_size: int = 32,
             eval_batch_size: int = 32,
             num_workers: int = 8,
+            num_preprocess_processes: int = 8,
             **kwargs
     ):
         super().__init__()
-        self.model_name_or_path = model_name_or_path
+        self.model_name_or_path = vocal_model_name_or_path
+        self.dataset_loader = datasets_loader
         self.task_name = task_name
         self.max_seq_length = max_seq_length
         self.train_batch_size = train_batch_size
         self.eval_batch_size = eval_batch_size
         self.num_workers = num_workers
-        # self.cache_dir = './'
+        self.num_preprocess_processes = num_preprocess_processes
 
-        # self.tokenizer = BertTokenizerFast.from_pretrained(self.model_name_or_path, use_fast=True)
-        self.tokenizer = BertTokenizerFast("./bert-large-uncased-vocab.txt", use_fast=True)
+        self.tokenizer = BertTokenizerFast.from_pretrained(self.model_name_or_path, use_fast=True)
         self.dataset = None
 
     def setup(self, stage: Optional[str] = None):
-        # self.dataset = datasets.load_dataset('race', self.task_name) # Load from Online dataset
-        self.dataset = datasets.load_dataset('./Load_race.py', self.task_name) # Load from Local Scripts
+        self.dataset = datasets.load_dataset(self.dataset_loader, self.task_name)
 
         preprocessor = partial(self.preprocess, self.tokenizer, self.max_seq_length)
 
@@ -43,18 +44,15 @@ class RACEDataModule(pl.LightningDataModule):
                 preprocessor,
                 # batched=True,
                 remove_columns=['example_id'],
-                num_proc=8,
+                num_proc=self.num_preprocess_processes,
                 keep_in_memory=True,
             )
             self.dataset[split].set_format(type='torch',
                                            columns=['input_ids', 'token_type_ids', 'attention_mask', 'label'])
-            # self.dataset[split] = torch.utils.data.DataLoader(self.dataset[split])
 
     def prepare_data(self):
-        # datasets.load_dataset('race', self.task_name) # Load from Online dataset
-        # BertTokenizerFast.from_pretrained(self.model_name_or_path, use_fast=True)
-        datasets.load_dataset('./Load_race.py', self.task_name) # Load from Local Scripts
-        BertTokenizerFast("./bert-large-uncased-vocab.txt", use_fast=True)
+        datasets.load_dataset(self.dataset_loader, self.task_name)
+        BertTokenizerFast.from_pretrained(self.model_name_or_path, use_fast=True)
 
     def train_dataloader(self):
         return DataLoader(self.dataset['train'],

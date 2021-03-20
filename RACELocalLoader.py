@@ -1,4 +1,4 @@
-"""TODO(race): Add a description here."""
+"""RACE Local Dataset loader"""
 
 from __future__ import absolute_import, division, print_function
 
@@ -115,6 +115,3 @@ class Race(datasets.GeneratorBasedBuilder):
                         "answer": answer,
                         "options": option,
                     }
-
-
-    
