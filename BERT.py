@@ -15,7 +15,8 @@ class BertForRace(pl.LightningModule):
                  learning_rate: float = 0.01,
                  gradient_accumulation_steps: int = 1,
                  num_train_epochs: float = 3.0,
-                 train_batch_size: int = 32):
+                 train_batch_size: int = 32,
+                 warmup_proportion: float = 0.1):
         super().__init__()
         self.config = BertConfig.from_pretrained(bert_config, num_choices=4)
         print(self.config)
@@ -28,8 +29,9 @@ class BertForRace(pl.LightningModule):
         self.gradient_accumulation_steps = gradient_accumulation_steps
         self.num_train_epochs = num_train_epochs
         self.train_batch_size = train_batch_size
+        self.warmup_proportion = warmup_proportion
 
-        self.warmup_steps = 10
+        self.warmup_steps = 0
         self.total_steps = 0
 
     def setup(self, stage: str) -> None:
@@ -40,6 +42,7 @@ class BertForRace(pl.LightningModule):
             # Calculate total steps
             self.total_steps = int(len(train_loader.dataset)
                                    / self.train_batch_size / self.gradient_accumulation_steps * self.num_train_epochs)
+            self.warmup_steps = int(self.total_steps * self.warmup_proportion)
 
     def configure_optimizers(self):
         # Prepare optimizer
@@ -115,15 +118,16 @@ class BertForRace(pl.LightningModule):
         }
 
     def test_epoch_end(self, outputs: List[Any]) -> None:
-        val_acc = sum([out["correct_count"] for out in outputs]).float() / sum(out["batch_size"] for out in outputs)
-        val_loss = sum([out["test_loss"] for out in outputs]) / len(outputs)
-        self.log('test_acc', val_acc)
-        self.log('test_loss', val_loss)
+        test_acc = sum([out["correct_count"] for out in outputs]).float() / sum(out["batch_size"] for out in outputs)
+        test_loss = sum([out["test_loss"] for out in outputs]) / len(outputs)
+        self.log('test_acc', test_acc)
+        self.log('test_loss', test_loss)
 
 
 if __name__ == '__main__':
     tb_logger = pl_loggers.TensorBoardLogger('result/asc01/')
     model = BertForRace()
     dm = RACEDataModule()
-    trainer = pl.Trainer(logger=tb_logger, gpus=1, amp_level='O2', precision=16, max_epochs=10)
+    trainer = pl.Trainer(logger=tb_logger, gpus=1, amp_level='O2', precision=16, gradient_clip_val=1.0, max_epochs=5)
     trainer.fit(model, dm)
+    trainer.test(datamodule=dm)

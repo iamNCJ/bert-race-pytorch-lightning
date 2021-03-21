@@ -31,7 +31,7 @@ class RACEDataModule(pl.LightningDataModule):
         self.num_workers = num_workers
         self.num_preprocess_processes = num_preprocess_processes
 
-        self.tokenizer = BertTokenizerFast.from_pretrained(self.model_name_or_path, use_fast=True)
+        self.tokenizer = BertTokenizerFast.from_pretrained(self.model_name_or_path, use_fast=True, do_lower_case=True)
         self.dataset = None
 
     def setup(self, stage: Optional[str] = None):
@@ -45,7 +45,7 @@ class RACEDataModule(pl.LightningDataModule):
                 # batched=True,
                 remove_columns=['example_id'],
                 num_proc=self.num_preprocess_processes,
-                keep_in_memory=True,
+                # keep_in_memory=True,
             )
             self.dataset[split].set_format(type='torch',
                                            columns=['input_ids', 'token_type_ids', 'attention_mask', 'label'])
@@ -109,7 +109,7 @@ class RACEDataModule(pl.LightningDataModule):
 
 
 if __name__ == '__main__':
-    dm = RACEDataModule()
+    dm = RACEDataModule(train_batch_size=32)
     dm.setup('train')
     d = (next(iter(dm.train_dataloader())))
     print(d)
