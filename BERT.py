@@ -3,6 +3,7 @@ from typing import List, Any
 import pytorch_lightning as pl
 import torch
 from transformers import BertConfig, BertForMultipleChoice, AdamW, get_linear_schedule_with_warmup
+from pytorch_lightning import loggers as pl_loggers
 
 from RACEDataModule import RACEDataModule
 
@@ -121,7 +122,8 @@ class BertForRace(pl.LightningModule):
 
 
 if __name__ == '__main__':
+    tb_logger = pl_loggers.TensorBoardLogger('result/asc01/')
     model = BertForRace()
     dm = RACEDataModule()
-    trainer = pl.Trainer(gpus=1, amp_level='O2', precision=16, max_epochs=10)
+    trainer = pl.Trainer(logger=tb_logger, gpus=1, amp_level='O2', precision=16, max_epochs=10)
     trainer.fit(model, dm)

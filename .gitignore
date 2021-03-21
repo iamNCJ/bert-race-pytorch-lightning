@@ -124,3 +124,6 @@ RACE
 
 # pytorch lightening logs
 lightning_logs
+
+# ASC results
+results
