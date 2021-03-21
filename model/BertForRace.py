@@ -15,14 +15,16 @@ class BertForRace(pl.LightningModule):
                  gradient_accumulation_steps: int = 1,
                  num_train_epochs: float = 3.0,
                  train_batch_size: int = 32,
-                 warmup_proportion: float = 0.1):
+                 warmup_proportion: float = 0.1,
+                 train_all: bool = False):
         super().__init__()
         self.config = BertConfig.from_pretrained(bert_config, num_choices=4)
         print(self.config)
         self.bert_model = BertForMultipleChoice.from_pretrained(pretrained_model, config=self.config)
 
-        for param in self.bert_model.bert.parameters():
-            param.requires_grad = False
+        if not train_all:
+            for param in self.bert_model.bert.parameters():
+                param.requires_grad = False
 
         self.learning_rate = learning_rate
         self.gradient_accumulation_steps = gradient_accumulation_steps
@@ -56,9 +58,10 @@ class BertForRace(pl.LightningModule):
             {'params': [p for n, p in param_optimizer if not any(nd in n for nd in no_decay)], 'weight_decay': 0.01},
             {'params': [p for n, p in param_optimizer if any(nd in n for nd in no_decay)], 'weight_decay': 0.0}
         ]
-        optimizer = AdamW(optimizer_grouped_parameters,
-                          lr=self.learning_rate,
-                          )
+        optimizer = AdamW(
+            optimizer_grouped_parameters,
+            lr=self.learning_rate,
+        )
 
         scheduler = get_linear_schedule_with_warmup(
             optimizer, num_warmup_steps=self.warmup_steps, num_training_steps=self.total_steps

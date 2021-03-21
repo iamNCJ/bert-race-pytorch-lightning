@@ -9,6 +9,7 @@ if __name__ == '__main__':
     tb_logger = pl_loggers.TensorBoardLogger('result/asc01/')
     model = BertForRace(
         learning_rate=2e-5,
+        train_all=True,
     )
     dm = RACEDataModule()
     trainer = pl.Trainer(
