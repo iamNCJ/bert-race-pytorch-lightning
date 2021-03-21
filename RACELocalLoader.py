@@ -8,7 +8,6 @@ from pathlib import Path
 
 import datasets
 
-
 _CITATION = """\
 @article{lai2017large,
     title={RACE: Large-scale ReAding Comprehension Dataset From Examinations},
@@ -24,6 +23,7 @@ Race is a large-scale reading comprehension dataset with more than 28,000 passag
 The dataset can be served as the training and test sets for machine comprehension.
 
 """
+
 
 # _URL = "http://www.cs.cmu.edu/~glai1/data/race/RACE.tar.gz"
 
@@ -72,7 +72,7 @@ class Race(datasets.GeneratorBasedBuilder):
         # dl_manager is a datasets.download.DownloadManager that can be used to
         # dl_dir = dl_manager.download_and_extract(_URL)
         dl_dir = "./RACE_Load"
-        
+
         case = str(self.config.name)
         if case == "all":
             case = ""
