@@ -9,7 +9,7 @@
 pip install -r requirements.txt
 ```
 
-You need to install `apex` separately
+~~You need to install `apex` separately~~ We use native 16-bit precision for better stability
 
 ## TODO
 
@@ -18,11 +18,16 @@ You need to install `apex` separately
  - [x] Refactor RACE Dataset Loader
    - [x] Use `datasets` from `transformer`
    - [x] Better Interface and Format
-   - [x] Faster Data Loading (using Rust & multi-process)
+   - [x] Faster Data Loading (Using rust & multi-process)
    - [x] Cache Tokenized Results
-   - [x] Custom Datasets (Local Loading)
+   - [x] Custom Datasets (Local loading)
  - [x] Mix Precision Training (~~Apex~~)
- - [ ] TensorBoard
+ - [x] TensorBoard Logging
+   - [x] Change Log Dir
+   - [ ] Add ASC Score to Log
+ - [ ] Text Logging (Should be **same** as baseline code)
+ - [ ] Argparse
+ - [ ] Inference & Answer Saving
  - [ ] Optuna
  - [ ] Parallelism
  - [ ] Distributed
