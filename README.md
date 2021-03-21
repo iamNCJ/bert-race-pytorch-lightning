@@ -28,7 +28,8 @@ pip install -r requirements.txt
  - [ ] Text Logging (Should be **same** as baseline code)
  - [ ] Argparse
  - [ ] Inference & Answer Saving
- - [ ] Optuna
+ - [x] Optuna
+   - [ ] More parameters
  - [ ] Parallelism
  - [ ] Distributed
  - [ ] Data Augmentation
