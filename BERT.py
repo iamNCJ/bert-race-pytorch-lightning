@@ -12,7 +12,7 @@ class BertForRace(pl.LightningModule):
     def __init__(self,
                  pretrained_model: str = 'bert-large-uncased',
                  bert_config: str = 'bert-large-uncased',  # pretrained_model+'/bert_config.json'
-                 learning_rate: float = 0.01,
+                 learning_rate: float = 2e-5,
                  gradient_accumulation_steps: int = 1,
                  num_train_epochs: float = 3.0,
                  train_batch_size: int = 32,
