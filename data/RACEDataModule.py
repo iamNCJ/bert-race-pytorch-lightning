@@ -14,7 +14,7 @@ class RACEDataModule(pl.LightningDataModule):
             vocal_model_name_or_path: str = 'bert-large-uncased',  # './bert-large-uncased-vocab.txt'
             datasets_loader: str = 'race',  # 'RACELocalLoader.py'
             task_name: str = 'all',
-            max_seq_length: int = 128,
+            max_seq_length: int = 512,
             train_batch_size: int = 32,
             eval_batch_size: int = 32,
             num_workers: int = 8,
@@ -76,24 +76,18 @@ class RACEDataModule(pl.LightningDataModule):
     @staticmethod
     def preprocess(tokenizer: BertTokenizerFast, max_seq_length: int, x: Dict) -> Dict:
         choices_features = []
-        max_len = max_seq_length
         label_map = {"A": 0, "B": 1, "C": 2, "D": 3}
 
         option: str
         for option in x["options"]:
-            text_a = x["article"]
-            if x["question"].find("_") != -1:
-                text_b = x["question"].replace("_", option)
-            else:
-                text_b = x["question"] + " " + option
-
             inputs = tokenizer.encode_plus(
-                text_a,
-                text_b,
+                x["article"],
+                x["question"] + ' ' + option,
                 add_special_tokens=True,
-                max_length=max_len,
+                max_length=max_seq_length,
                 truncation=True,
                 padding='max_length',
+                return_tensors='pt'
             )
             choices_features.append(inputs)
 
@@ -102,9 +96,9 @@ class RACEDataModule(pl.LightningDataModule):
 
         return {
             "label": label,
-            "input_ids": torch.tensor([cf["input_ids"] for cf in choices_features]).reshape(-1),
-            "attention_mask": torch.tensor([cf["attention_mask"] for cf in choices_features]).reshape(-1),
-            "token_type_ids": torch.tensor([cf["token_type_ids"] for cf in choices_features]).reshape(-1),
+            "input_ids": torch.cat([cf["input_ids"] for cf in choices_features]).reshape(-1),
+            "attention_mask": torch.cat([cf["attention_mask"] for cf in choices_features]).reshape(-1),
+            "token_type_ids": torch.cat([cf["token_type_ids"] for cf in choices_features]).reshape(-1),
         }
 
 
