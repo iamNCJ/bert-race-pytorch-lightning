@@ -95,7 +95,7 @@ class BertForRace(pl.LightningModule):
     def training_step(self, batch, batch_idx):
         loss, correct_count = self.compute(batch)
         self.log('train_loss', loss)
-        self.log('train_acc', correct_count / len(batch['label']))
+        self.log('train_acc', correct_count.float() / len(batch['label']))
 
         return loss
 
