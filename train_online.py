@@ -14,6 +14,7 @@ if __name__ == '__main__':
     )
     dm = RACEDataModule(
         train_batch_size=8,
+        max_seq_length=256,
     )
     trainer = pl.Trainer(
         logger=tb_logger,

@@ -85,7 +85,7 @@ class RACEDataModule(pl.LightningDataModule):
                 x["question"] + ' ' + option,
                 add_special_tokens=True,
                 max_length=max_seq_length,
-                truncation=True,
+                truncation='only_first',
                 padding='max_length',
                 return_tensors='pt'
             )
