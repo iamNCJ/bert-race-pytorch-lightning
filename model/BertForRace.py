@@ -16,7 +16,8 @@ class BertForRace(pl.LightningModule):
                  num_train_epochs: float = 3.0,
                  train_batch_size: int = 32,
                  warmup_proportion: float = 0.1,
-                 train_all: bool = False):
+                 train_all: bool = False,
+                 use_bert_adam: bool = True):
         super().__init__()
         self.config = BertConfig.from_pretrained(bert_config, num_choices=4)
         print(self.config)
@@ -31,6 +32,7 @@ class BertForRace(pl.LightningModule):
         self.num_train_epochs = num_train_epochs
         self.train_batch_size = train_batch_size
         self.warmup_proportion = warmup_proportion
+        self.use_bert_adam = use_bert_adam
 
         self.warmup_steps = 0
         self.total_steps = 0
@@ -61,6 +63,9 @@ class BertForRace(pl.LightningModule):
         optimizer = AdamW(
             optimizer_grouped_parameters,
             lr=self.learning_rate,
+        ) if self.use_bert_adam else torch.optim.Adam(
+            optimizer_grouped_parameters,
+            lr=self.learning_rate
         )
 
         scheduler = get_linear_schedule_with_warmup(

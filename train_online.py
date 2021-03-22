@@ -9,16 +9,18 @@ if __name__ == '__main__':
     tb_logger = pl_loggers.TensorBoardLogger('result/asc01/')
     model = BertForRace(
         learning_rate=2e-5,
-        train_all=True,
+        num_train_epochs=10,
+        train_all=False,
     )
     dm = RACEDataModule()
     trainer = pl.Trainer(
         logger=tb_logger,
         gpus=-1 if torch.cuda.is_available() else None,
+        amp_backend='apex',
         amp_level='O2',
         precision=16,
         gradient_clip_val=1.0,
-        max_epochs=5,
+        max_epochs=10,
     )
     trainer.fit(model, dm)
     trainer.test(datamodule=dm)

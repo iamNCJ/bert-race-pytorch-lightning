@@ -9,7 +9,7 @@
 pip install -r requirements.txt
 ```
 
-~~You need to install `apex` separately~~ We use native 16-bit precision for better stability
+You need to install `apex` separately
 
 ## TODO
 
@@ -21,7 +21,7 @@ pip install -r requirements.txt
    - [x] Faster Data Loading (Using rust & multi-process)
    - [x] Cache Tokenized Results
    - [x] Custom Datasets (Local loading)
- - [x] Mix Precision Training (~~Apex~~)
+ - [x] Mix Precision Training (Apex)
  - [x] TensorBoard Logging
    - [x] Change Log Dir
    - [ ] Add ASC Score to Log
