@@ -21,10 +21,10 @@ class BertForRace(pl.LightningModule):
         super().__init__()
         self.config = BertConfig.from_pretrained(bert_config, num_choices=4)
         print(self.config)
-        self.bert_model = BertForMultipleChoice.from_pretrained(pretrained_model, config=self.config)
+        self.model = BertForMultipleChoice.from_pretrained(pretrained_model, config=self.config)
 
         if not train_all:
-            for param in self.bert_model.bert.parameters():
+            for param in self.model.bert.parameters():
                 param.requires_grad = False
 
         self.learning_rate = learning_rate
@@ -49,7 +49,7 @@ class BertForRace(pl.LightningModule):
 
     def configure_optimizers(self):
         # Prepare optimizer
-        param_optimizer = list(self.bert_model.named_parameters())
+        param_optimizer = list(self.model.named_parameters())
 
         # hack to remove pooler, which is not used
         # thus it produce None grad that break apex
@@ -79,29 +79,31 @@ class BertForRace(pl.LightningModule):
         return [optimizer], [scheduler]
 
     def forward(self, **inputs):
-        return self.bert_model(**inputs)
+        return self.model(**inputs)
 
     def compute(self, batch):
-        return self.bert_model(
+        outputs = self(
             input_ids=batch['input_ids'].reshape(batch['input_ids'].shape[0], 4, -1),
             token_type_ids=batch['token_type_ids'].reshape(batch['token_type_ids'].shape[0], 4, -1),
             attention_mask=batch['attention_mask'].reshape(batch['attention_mask'].shape[0], 4, -1),
             labels=batch['label'],
         )
-
-    def training_step(self, batch, batch_idx):
-        outputs = self.compute(batch)
-        self.log('train_loss', outputs.loss)
-
-        return outputs.loss
-
-    def validation_step(self, batch, batch_idx):
-        outputs = self.compute(batch)
         labels_hat = torch.argmax(outputs.logits, dim=1)
         correct_count = torch.sum(batch['label'] == labels_hat)
+        return outputs.loss, correct_count
+
+    def training_step(self, batch, batch_idx):
+        loss, correct_count = self.compute(batch)
+        self.log('train_loss', loss)
+        self.log('train_acc', correct_count / len(batch['label']))
+
+        return loss
+
+    def validation_step(self, batch, batch_idx):
+        loss, correct_count = self.compute(batch)
 
         return {
-            "val_loss": outputs.loss,
+            "val_loss": loss,
             "correct_count": correct_count,
             "batch_size": len(batch['label'])
         }
@@ -113,12 +115,10 @@ class BertForRace(pl.LightningModule):
         self.log('val_loss', val_loss)
 
     def test_step(self, batch, batch_idx):
-        outputs = self.compute(batch)
-        labels_hat = torch.argmax(outputs.logits, dim=1)
-        correct_count = torch.sum(batch['label'] == labels_hat)
+        loss, correct_count = self.compute(batch)
 
         return {
-            "test_loss": outputs.loss,
+            "test_loss": loss,
             "correct_count": correct_count,
             "batch_size": len(batch['label'])
         }
