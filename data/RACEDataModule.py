@@ -80,7 +80,7 @@ class RACEDataModule(pl.LightningDataModule):
 
         option: str
         for option in x["options"]:
-            inputs = tokenizer.encode_plus(
+            inputs = tokenizer(
                 x["article"],
                 x["question"] + ' ' + option,
                 add_special_tokens=True,

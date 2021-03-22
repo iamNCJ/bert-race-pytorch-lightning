@@ -27,6 +27,11 @@ class BertForRace(pl.LightningModule):
         if not train_all:
             for param in self.model.bert.parameters():
                 param.requires_grad = False
+            for param in self.model.bert.pooler.parameters():
+                param.requires_grad = True
+
+        for name, params in self.model.named_parameters():
+            print('-->name:', name, '-->grad_require:', params.requires_grad)
 
         self.learning_rate = learning_rate
         self.gradient_accumulation_steps = gradient_accumulation_steps
