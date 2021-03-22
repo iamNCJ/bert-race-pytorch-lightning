@@ -89,8 +89,7 @@ class BertForRace(pl.LightningModule):
             attention_mask=batch['attention_mask'].reshape(batch['attention_mask'].shape[0], 4, -1),
             labels=batch['label'],
         )
-        print(outputs)
-        labels_hat = torch.argmax(outputs.logits, dim=1)
+        labels_hat = torch.argmax(outputs['logits'], dim=1)
         correct_count = torch.sum(batch['label'] == labels_hat)
         return outputs.loss, correct_count
 
