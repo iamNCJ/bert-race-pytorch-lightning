@@ -85,7 +85,7 @@ class RACEDataModule(pl.LightningDataModule):
                 x["question"] + ' ' + option,
                 add_special_tokens=True,
                 max_length=max_seq_length,
-                truncation='only_first',
+                truncation=True,
                 padding='max_length',
                 return_tensors='pt'
             )
@@ -105,5 +105,5 @@ class RACEDataModule(pl.LightningDataModule):
 if __name__ == '__main__':
     dm = RACEDataModule(train_batch_size=32)
     dm.setup('train')
-    d = (next(iter(dm.train_dataloader())))
+    d = (next(iter(dm.test_dataloader())))
     print(d)

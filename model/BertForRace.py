@@ -1,7 +1,7 @@
-from typing import List, Any
-
 import pytorch_lightning as pl
 import torch
+import torch.nn.functional as F
+from pytorch_lightning.metrics import functional as FM
 from transformers import BertConfig, BertForMultipleChoice, AdamW, get_linear_schedule_with_warmup
 
 from data.RACEDataModule import RACEDataModule
@@ -28,6 +28,8 @@ class BertForRace(pl.LightningModule):
             for param in self.model.bert.parameters():
                 param.requires_grad = False
             for param in self.model.bert.pooler.parameters():
+                param.requires_grad = True
+            for param in self.model.bert.encoder.layer[23].output.parameters():
                 param.requires_grad = True
 
         for name, params in self.model.named_parameters():
@@ -95,45 +97,55 @@ class BertForRace(pl.LightningModule):
             labels=batch['label'],
         )
         labels_hat = torch.argmax(outputs.logits, dim=1)
-        correct_count = torch.sum(batch['label'] == labels_hat)
-        return outputs.loss, correct_count
+        # correct_count = torch.sum(batch['label'] == labels_hat)
+        loss = F.cross_entropy(labels_hat, batch['label'])
+        acc = FM.accuracy(labels_hat, batch['label'])
+        return loss, acc
 
     def training_step(self, batch, batch_idx):
-        loss, correct_count = self.compute(batch)
+        loss, acc = self.compute(batch)
         self.log('train_loss', loss)
-        self.log('train_acc', correct_count.float() / len(batch['label']))
+        self.log('train_acc', acc)
 
         return loss
 
     def validation_step(self, batch, batch_idx):
-        loss, correct_count = self.compute(batch)
+        loss, acc = self.compute(batch)
+        self.log('val_acc', acc)
+        self.log('val_loss', loss)
 
-        return {
-            "val_loss": loss,
-            "correct_count": correct_count,
-            "batch_size": len(batch['label'])
-        }
+        return loss
 
-    def validation_epoch_end(self, outputs: List[Any]) -> None:
-        val_acc = sum([out["correct_count"] for out in outputs]).float() / sum(out["batch_size"] for out in outputs)
-        val_loss = sum([out["val_loss"] for out in outputs]) / len(outputs)
-        self.log('val_acc', val_acc)
-        self.log('val_loss', val_loss)
+        # return {
+        #     "val_loss": loss,
+        #     "correct_count": correct_count,
+        #     "batch_size": len(batch['label'])
+        # }
+
+    # def validation_epoch_end(self, outputs: List[Any]) -> None:
+    #     val_acc = sum([out["correct_count"] for out in outputs]).float() / sum(out["batch_size"] for out in outputs)
+    #     val_loss = sum([out["val_loss"] for out in outputs]) / len(outputs)
+    #     self.log('val_acc', val_acc)
+    #     self.log('val_loss', val_loss)
 
     def test_step(self, batch, batch_idx):
-        loss, correct_count = self.compute(batch)
+        loss, acc = self.compute(batch)
+        self.log('test_acc', acc)
+        self.log('test_loss', loss)
 
-        return {
-            "test_loss": loss,
-            "correct_count": correct_count,
-            "batch_size": len(batch['label'])
-        }
+        return loss
 
-    def test_epoch_end(self, outputs: List[Any]) -> None:
-        test_acc = sum([out["correct_count"] for out in outputs]).float() / sum(out["batch_size"] for out in outputs)
-        test_loss = sum([out["test_loss"] for out in outputs]) / len(outputs)
-        self.log('test_acc', test_acc)
-        self.log('test_loss', test_loss)
+    #     return {
+    #         "test_loss": loss,
+    #         "correct_count": correct_count,
+    #         "batch_size": len(batch['label'])
+    #     }
+    #
+    # def test_epoch_end(self, outputs: List[Any]) -> None:
+    #     test_acc = sum([out["correct_count"] for out in outputs]).float() / sum(out["batch_size"] for out in outputs)
+    #     test_loss = sum([out["test_loss"] for out in outputs]) / len(outputs)
+    #     self.log('test_acc', test_acc)
+    #     self.log('test_loss', test_loss)
 
 
 if __name__ == '__main__':
