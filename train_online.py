@@ -12,7 +12,9 @@ if __name__ == '__main__':
         num_train_epochs=10,
         train_all=False,
     )
-    dm = RACEDataModule()
+    dm = RACEDataModule(
+        train_batch_size=8,
+    )
     trainer = pl.Trainer(
         logger=tb_logger,
         gpus=-1 if torch.cuda.is_available() else None,
