@@ -21,6 +21,7 @@ if __name__ == '__main__':
         precision=16,
         gradient_clip_val=1.0,
         max_epochs=10,
+        accumulate_grad_batches=1,
     )
     trainer.fit(model, dm)
     trainer.test(datamodule=dm)
