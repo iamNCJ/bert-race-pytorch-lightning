@@ -8,13 +8,13 @@ from model.BertForRace import BertForRace
 if __name__ == '__main__':
     tb_logger = pl_loggers.TensorBoardLogger('result/asc01/')
     model = BertForRace(
-        learning_rate=1e-5,
+        learning_rate=2e-5,
         num_train_epochs=10,
         train_batch_size=8,
         train_all=False,
     )
     dm = RACEDataModule(
-        train_batch_size=8,
+        train_batch_size=32,
         max_seq_length=128,
     )
     trainer = pl.Trainer(
