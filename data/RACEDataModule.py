@@ -45,7 +45,6 @@ class RACEDataModule(pl.LightningDataModule):
                 # batched=True,
                 remove_columns=['example_id'],
                 num_proc=self.num_preprocess_processes,
-                # keep_in_memory=True,
             )
             self.dataset[split].set_format(type='torch',
                                            columns=['input_ids', 'token_type_ids', 'attention_mask', 'label'])
@@ -80,9 +79,16 @@ class RACEDataModule(pl.LightningDataModule):
 
         option: str
         for option in x["options"]:
+            question = x["question"]
+            if question.find("_") != -1:
+                # fill in the banks questions
+                question_option = question.replace("_", option)
+            else:
+                question_option = question + " [SEP] " + option
+
             inputs = tokenizer(
                 x["article"],
-                x["question"] + ' ' + option,
+                question_option,
                 add_special_tokens=True,
                 max_length=max_seq_length,
                 truncation=True,
