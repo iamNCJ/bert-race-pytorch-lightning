@@ -4,6 +4,33 @@ bert for RACE with pytorch-lightening and transformer
 
 adopted from [ASC2021-RACE](https://github.com/ASC-Competition/ASC2021-RACE)
 
+## File Structure
+
+```bash
+.
+├── bert-large-uncased
+│   ├── config.json
+│   ├── pytorch_model.bin
+│   └── vocab.txt
+├── data
+│   ├── RACE
+│   ├── RACEDataModule.py
+│   ├── RACELocalLoader.py
+│   └── RACELocalLoader.py.lock
+├── hp_optimize.py
+├── LICENSE
+├── model
+│   └── BertForRace.py
+├── README.md
+├── requirements.txt
+├── result
+│   └── asc01
+├── train_offline.py
+└── train_online.py
+```
+
+Please put the data and pre-trained model as above.
+
 ## Environment
 
 ```bash

@@ -11,7 +11,6 @@ class BertForRace(pl.LightningModule):
     def __init__(
             self,
             pretrained_model: str = 'bert-large-uncased',
-            bert_config: str = 'bert-large-uncased',  # pretrained_model+'/bert_config.json'
             learning_rate: float = 2e-5,
             gradient_accumulation_steps: int = 1,
             num_train_epochs: float = 3.0,
@@ -20,7 +19,7 @@ class BertForRace(pl.LightningModule):
             train_all: bool = False,
             use_bert_adam: bool = True):
         super().__init__()
-        self.config = BertConfig.from_pretrained(bert_config, num_choices=4)
+        self.config = BertConfig.from_pretrained(pretrained_model, num_choices=4)
         print(self.config)
         self.model = BertForMultipleChoice.from_pretrained(pretrained_model, config=self.config)
 
