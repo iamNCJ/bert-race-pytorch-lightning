@@ -113,14 +113,20 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
+# lock
+*.py.lock
+
 # PyCharm
 .idea
 
 # macOS
 .DS_Store
 
+# Model
+bert-large-uncased
+
 # Datasets
-RACE
+data/RACE
 
 # pytorch lightening logs
 lightning_logs

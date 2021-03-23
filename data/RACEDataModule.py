@@ -5,7 +5,7 @@ import datasets
 import pytorch_lightning as pl
 import torch
 from torch.utils.data import DataLoader, RandomSampler, SequentialSampler
-from transformers import BertTokenizerFast
+from transformers import BertTokenizer
 
 
 class RACEDataModule(pl.LightningDataModule):
@@ -31,7 +31,7 @@ class RACEDataModule(pl.LightningDataModule):
         self.num_workers = num_workers
         self.num_preprocess_processes = num_preprocess_processes
 
-        self.tokenizer = BertTokenizerFast.from_pretrained(self.model_name_or_path, use_fast=True, do_lower_case=True)
+        self.tokenizer = BertTokenizer.from_pretrained(self.model_name_or_path, use_fast=True, do_lower_case=True)
         self.dataset = None
 
     def setup(self, stage: Optional[str] = None):
@@ -51,7 +51,7 @@ class RACEDataModule(pl.LightningDataModule):
 
     def prepare_data(self):
         datasets.load_dataset(self.dataset_loader, self.task_name)
-        BertTokenizerFast.from_pretrained(self.model_name_or_path, use_fast=True)
+        BertTokenizer.from_pretrained(self.model_name_or_path, use_fast=True)
 
     def train_dataloader(self):
         return DataLoader(self.dataset['train'],
@@ -73,7 +73,7 @@ class RACEDataModule(pl.LightningDataModule):
 
     # auto cache tokens
     @staticmethod
-    def preprocess(tokenizer: BertTokenizerFast, max_seq_length: int, x: Dict) -> Dict:
+    def preprocess(tokenizer: BertTokenizer, max_seq_length: int, x: Dict) -> Dict:
         choices_features = []
         label_map = {"A": 0, "B": 1, "C": 2, "D": 3}
 

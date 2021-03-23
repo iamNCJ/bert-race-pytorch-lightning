@@ -71,7 +71,7 @@ class Race(datasets.GeneratorBasedBuilder):
         # Downloads the data and defines the splits
         # dl_manager is a datasets.download.DownloadManager that can be used to
         # dl_dir = dl_manager.download_and_extract(_URL)
-        dl_dir = "./RACE_Load"
+        dl_dir = "./data"
 
         case = str(self.config.name)
         if case == "all":

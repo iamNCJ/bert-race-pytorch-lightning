@@ -8,21 +8,27 @@ from model.BertForRace import BertForRace
 if __name__ == '__main__':
     tb_logger = pl_loggers.TensorBoardLogger('result/asc01/')
     model = BertForRace(
-        pretrained_model='./bert-large-uncased-vocab.txt',
-        bert_config='bert-large-uncased/bert_config.json',
+        pretrained_model='./bert-large-uncased',
         learning_rate=2e-5,
+        num_train_epochs=10,
+        train_batch_size=8,
+        train_all=False,
     )
     dm = RACEDataModule(
-        vocal_model_name_or_path='./bert-large-uncased-vocab.txt',
-        datasets_loader='RACELocalLoader.py',
+        model_name_or_path='./bert-large-uncased',
+        datasets_loader='./data/RACELocalLoader.py',
+        train_batch_size=32,
+        max_seq_length=128,
     )
     trainer = pl.Trainer(
         logger=tb_logger,
         gpus=-1 if torch.cuda.is_available() else None,
+        amp_backend='apex',
         amp_level='O2',
         precision=16,
         gradient_clip_val=1.0,
-        max_epochs=5
+        max_epochs=20,
+        accumulate_grad_batches=2,
     )
     trainer.fit(model, dm)
     trainer.test(datamodule=dm)
