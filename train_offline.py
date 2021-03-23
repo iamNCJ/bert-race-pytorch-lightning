@@ -6,7 +6,7 @@ from data.RACEDataModule import RACEDataModule
 from model.BertForRace import BertForRace
 
 if __name__ == '__main__':
-    tb_logger = pl_loggers.TensorBoardLogger('result/asc01/')
+    tb_logger = pl_loggers.TensorBoardLogger('./result/asc01/')
     model = BertForRace(
         pretrained_model='./model/bert-large-uncased',
         learning_rate=2e-5,

@@ -12,13 +12,14 @@ def objective(trial: optuna.trial.Trial) -> float:
 
     model = BertForRace(learning_rate=learning_rate)
     dm = RACEDataModule(train_batch_size=64)
-    trainer = pl.Trainer(gpus=-1 if torch.cuda.is_available() else None,
-                         amp_level='O2',
-                         precision=16,
-                         gradient_clip_val=1.0,
-                         max_epochs=1,
-                         callbacks=[PyTorchLightningPruningCallback(trial, monitor="val_acc")],
-                         )
+    trainer = pl.Trainer(
+        gpus=-1 if torch.cuda.is_available() else None,
+        amp_level='O2',
+        precision=16,
+        gradient_clip_val=1.0,
+        max_epochs=1,
+        callbacks=[PyTorchLightningPruningCallback(trial, monitor="val_acc")],
+    )
     trainer.fit(model, dm)
     return trainer.callback_metrics["val_acc"].item()
 
