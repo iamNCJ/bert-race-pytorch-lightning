@@ -9,22 +9,22 @@ adopted from [ASC2021-RACE](https://github.com/ASC-Competition/ASC2021-RACE)
 ```bash
 .
 ├── bert-large-uncased
-│   ├── config.json
-│   ├── pytorch_model.bin
-│   └── vocab.txt
+│   ├── config.json
+│   ├── pytorch_model.bin
+│   └── vocab.txt
 ├── data
-│   ├── RACE
-│   ├── RACEDataModule.py
-│   ├── RACELocalLoader.py
-│   └── RACELocalLoader.py.lock
+│   ├── RACE
+│   ├── RACEDataModule.py
+│   ├── RACELocalLoader.py
+│   └── RACELocalLoader.py.lock
 ├── hp_optimize.py
 ├── LICENSE
 ├── model
-│   └── BertForRace.py
+│   └── BertForRace.py
 ├── README.md
 ├── requirements.txt
 ├── result
-│   └── asc01
+│   └── asc01
 ├── train_offline.py
 └── train_online.py
 ```

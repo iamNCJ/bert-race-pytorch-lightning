@@ -126,7 +126,7 @@ dmypy.json
 bert-large-uncased
 
 # Datasets
-data/RACE
+RACE
 
 # pytorch lightening logs
 lightning_logs
