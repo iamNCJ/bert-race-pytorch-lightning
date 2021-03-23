@@ -14,8 +14,7 @@ adopted from [ASC2021-RACE](https://github.com/ASC-Competition/ASC2021-RACE)
 │   │   ├── test
 │   │   └── train
 │   ├── RACEDataModule.py
-│   ├── RACELocalLoader.py
-│   └── RACELocalLoader.py.lock
+│   └── RACELocalLoader.py
 ├── model
 │   ├── bert-large-uncased
 │   │   ├── config.json
