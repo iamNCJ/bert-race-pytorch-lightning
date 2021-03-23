@@ -6,27 +6,30 @@ adopted from [ASC2021-RACE](https://github.com/ASC-Competition/ASC2021-RACE)
 
 ## File Structure
 
-```bash
+```text
 .
-├── bert-large-uncased
-│   ├── config.json
-│   ├── pytorch_model.bin
-│   └── vocab.txt
 ├── data
 │   ├── RACE
+│   │   ├── dev
+│   │   ├── test
+│   │   └── train
 │   ├── RACEDataModule.py
 │   ├── RACELocalLoader.py
 │   └── RACELocalLoader.py.lock
-├── hp_optimize.py
-├── LICENSE
 ├── model
+│   ├── bert-large-uncased
+│   │   ├── config.json
+│   │   ├── pytorch_model.bin
+│   │   └── vocab.txt
 │   └── BertForRace.py
-├── README.md
-├── requirements.txt
 ├── result
 │   └── asc01
+├── hp_optimize.py
 ├── train_offline.py
-└── train_online.py
+├── train_online.py
+├── README.md
+├── requirements.txt
+└── LICENSE
 ```
 
 Please put the data and pre-trained model as above.

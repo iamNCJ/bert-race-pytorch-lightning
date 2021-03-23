@@ -123,10 +123,10 @@ dmypy.json
 .DS_Store
 
 # Model
-bert-large-uncased
+model/bert-large-uncased
 
 # Datasets
-RACE
+data/RACE
 
 # pytorch lightening logs
 lightning_logs
