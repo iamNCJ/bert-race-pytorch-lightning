@@ -24,8 +24,7 @@ adopted from [ASC2021-RACE](https://github.com/ASC-Competition/ASC2021-RACE)
 ├── result
 │   └── asc01
 ├── hp_optimize.py
-├── train_offline.py
-├── train_online.py
+├── train.py
 ├── README.md
 ├── requirements.txt
 └── LICENSE
