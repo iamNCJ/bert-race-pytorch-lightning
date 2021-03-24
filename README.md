@@ -40,6 +40,14 @@ pip install -r requirements.txt
 
 You need to install `apex` separately
 
+### On Cluster
+
+```bash
+scl enable devtoolset-9 bash
+conda activte [env]
+# then compile and install apex and other modules
+```
+
 ## TODO
 
 - [x] PyTorch Lightening
@@ -57,12 +65,13 @@ You need to install `apex` separately
 - [ ] Text Logging (Should be **same** as baseline code, override pl original progress bar)
 - [ ] Argparse
 - [ ] Inference & Answer Saving
-- [x] Optuna
+- [x] Hyper Parameter Tuning (Optuna)
     - [ ] More parameters
 - [ ] Parallelism
 - [ ] Distributed
-- [ ] Cross Validation
+- [ ] ~~Cross Validation~~ (Useless)
 - [ ] Data Augmentation
 - [ ] Bert Model Tweak
 - [ ] Model Ensemble
 - [ ] Find Best Seed
+- [ ] Further Speedup Training Process
