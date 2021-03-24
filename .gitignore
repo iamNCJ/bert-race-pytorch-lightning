@@ -133,3 +133,6 @@ lightning_logs
 
 # ASC results
 result
+
+# Train scripts
+train.local.py
