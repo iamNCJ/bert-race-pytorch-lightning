@@ -25,6 +25,7 @@ if __name__ == '__main__':
     trainer = pl.Trainer(
         logger=tb_logger,
         gpus=-1 if torch.cuda.is_available() else None,
+        accelerator='ddp',
         amp_backend='apex',
         amp_level='O2',
         precision=16,
