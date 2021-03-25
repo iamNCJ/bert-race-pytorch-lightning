@@ -67,7 +67,7 @@ conda activte [env]
 - [ ] Inference & Answer Saving
 - [x] Hyper Parameter Tuning (Optuna)
     - [ ] More parameters
-- [ ] Parallelism
+- [x] Parallelism
 - [ ] Distributed
 - [ ] ~~Cross Validation~~ (Useless)
 - [ ] Data Augmentation
