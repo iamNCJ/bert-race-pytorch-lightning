@@ -28,9 +28,9 @@ class BertForRace(pl.LightningModule):
                 param.requires_grad = False
             for param in self.model.bert.pooler.parameters():
                 param.requires_grad = True
-            for param in self.model.bert.encoder.layer[21:24].parameters():
+            for param in self.model.bert.encoder.layer[18:24].parameters():
                 param.requires_grad = True
-            for param in self.model.bert.encoder.layer[20].output.parameters():
+            for param in self.model.bert.encoder.layer[17].output.parameters():
                 param.requires_grad = True
         for name, params in self.model.named_parameters():
             print('-->name:', name, '-->grad_require:', params.requires_grad)
