@@ -64,14 +64,14 @@ conda activte [env]
     - [ ] Add ASC Score to Log
 - [ ] Text Logging (Should be **same** as baseline code, override pl original progress bar)
 - [ ] Argparse
-- [ ] Inference & Answer Saving
+- [x] Inference & Answer Saving
 - [x] Hyper Parameter Tuning (Optuna)
     - [ ] More parameters
 - [x] Parallelism
 - [ ] Distributed
-- [ ] ~~Cross Validation~~ (Useless)
+- [x] ~~Cross Validation~~ (Useless)
 - [ ] Data Augmentation
 - [ ] Bert Model Tweak
 - [ ] Model Ensemble
-- [ ] Find Best Seed
+- [x] ~~Find Best Seed~~ (Useless, there will be new datasets and pre-trained model on-site)
 - [ ] Further Speedup Training Process
