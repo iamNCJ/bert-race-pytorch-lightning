@@ -31,5 +31,4 @@ class ApexDDP(DDPPlugin):
         self._model = DistributedDataParallel(
             LightningDistributedModule(self.model),
             delay_allreduce=True,
-            **self._ddp_kwargs,
         )
