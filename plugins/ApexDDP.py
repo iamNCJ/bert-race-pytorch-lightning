@@ -30,6 +30,6 @@ class ApexDDP(DDPPlugin):
         self.pre_configure_ddp()
         self._model = DistributedDataParallel(
             LightningDistributedModule(self.model),
-            device_ids=self.determine_ddp_device_ids(),
+            delay_allreduce=True,
             **self._ddp_kwargs,
         )
