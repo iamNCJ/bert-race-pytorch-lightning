@@ -4,6 +4,7 @@ from pytorch_lightning import loggers as pl_loggers
 
 from data.RACEDataModule import RACEDataModule
 from model.BertForRace import BertForRace
+from plugins.ApexDDP import ApexDDP
 
 if __name__ == '__main__':
     tb_logger = pl_loggers.TensorBoardLogger('./result/asc01/')
@@ -32,6 +33,7 @@ if __name__ == '__main__':
         gradient_clip_val=1.0,
         max_epochs=20,
         accumulate_grad_batches=2,
+        plugins=[ApexDDP()]
     )
     trainer.fit(model, dm)
     trainer.test(datamodule=dm)
