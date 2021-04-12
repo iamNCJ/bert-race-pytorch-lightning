@@ -3,12 +3,12 @@ import torch
 from pytorch_lightning import loggers as pl_loggers
 
 from data.RACEDataModule import RACEDataModule
-from model.LongformerForRace import LongformerForRace
+from model.BertForRace import BertForRace
 from plugins.ApexDDP import ApexDDP
 
 if __name__ == '__main__':
     tb_logger = pl_loggers.TensorBoardLogger('./result/asc01/')
-    model = LongformerForRace(
+    model = BertForRace(
         pretrained_model='./model/bert-large-uncased',
         learning_rate=2e-5,
         num_train_epochs=10,

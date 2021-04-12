@@ -2,9 +2,22 @@ from typing import Any, List
 
 import pytorch_lightning as pl
 import torch
-from transformers import BertConfig, BertForMultipleChoice, AdamW, get_linear_schedule_with_warmup
+from transformers import BertConfig, BertForMultipleChoice, LongformerSelfAttention, AdamW, get_linear_schedule_with_warmup
 
 from data.RACEDataModule import RACEDataModule
+
+
+class BertLongSelfAttention(LongformerSelfAttention):
+    def forward(
+        self,
+        hidden_states,
+        attention_mask=None,
+        head_mask=None,
+        encoder_hidden_states=None,
+        encoder_attention_mask=None,
+        output_attentions=False,
+    ):
+        return super().forward(hidden_states, attention_mask=attention_mask, output_attentions=output_attentions)
 
 
 class BertForRace(pl.LightningModule):
@@ -17,10 +30,11 @@ class BertForRace(pl.LightningModule):
             train_batch_size: int = 32,
             warmup_proportion: float = 0.1,
             train_all: bool = False,
-            use_bert_adam: bool = True):
+            use_bert_adam: bool = True,
+            use_longformer: bool = True,
+    ):
         super().__init__()
         self.config = BertConfig.from_pretrained(pretrained_model, num_choices=4)
-        print(self.config)
         self.model = BertForMultipleChoice.from_pretrained(pretrained_model, config=self.config)
 
         if not train_all:
@@ -32,6 +46,15 @@ class BertForRace(pl.LightningModule):
                 param.requires_grad = True
             for param in self.model.bert.encoder.layer[17].output.parameters():
                 param.requires_grad = True
+
+        if use_longformer:
+            self.config.attention_window = [self.config.max_position_embeddings] * self.config.num_hidden_layers
+            for i, layer in enumerate(self.model.bert.encoder.layer):
+                # replace the `modeling_bert.BertSelfAttention` object with `LongformerSelfAttention`
+                layer.attention.self = BertLongSelfAttention(self.config, layer_id=i)
+
+        # print model layers and config
+        print(self.config)
         for name, params in self.model.named_parameters():
             print('-->name:', name, '-->grad_require:', params.requires_grad)
 
