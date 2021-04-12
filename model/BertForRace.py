@@ -5,20 +5,7 @@ import torch
 from transformers import BertConfig, BertForMultipleChoice, LongformerSelfAttention, AdamW, get_linear_schedule_with_warmup
 
 from data.RACEDataModule import RACEDataModule
-
-
-class BertLongSelfAttention(LongformerSelfAttention):
-    def forward(
-        self,
-        hidden_states,
-        attention_mask=None,
-        head_mask=None,
-        encoder_hidden_states=None,
-        encoder_attention_mask=None,
-        past_key_value=None,
-        output_attentions=False
-    ):
-        return super().forward(hidden_states, attention_mask=attention_mask, output_attentions=output_attentions)
+from model.BertLongAttention import BertLongAttention
 
 
 class BertForRace(pl.LightningModule):
@@ -44,16 +31,50 @@ class BertForRace(pl.LightningModule):
                 param.requires_grad = False
             for param in self.model.bert.pooler.parameters():
                 param.requires_grad = True
-            for param in self.model.bert.encoder.layer[18:24].parameters():
-                param.requires_grad = True
-            for param in self.model.bert.encoder.layer[17].output.parameters():
-                param.requires_grad = True
+            # for param in self.model.bert.encoder.layer[18:24].parameters():
+            #     param.requires_grad = True
+            # for param in self.model.bert.encoder.layer[17].output.parameters():
+            #     param.requires_grad = True
 
         if use_longformer:
+            current_max_pos, embed_size = self.model.bert.embeddings.position_embeddings.weight.shape
+            max_pos = 512
+            self.config.max_position_embeddings = max_pos
+            assert max_pos >= current_max_pos
+            # allocate a larger position embedding matrix
+            new_pos_embed = self.model.bert.embeddings.position_embeddings.weight.new_empty(max_pos, embed_size)
+            print(new_pos_embed.shape)
+            print(self.model.bert.embeddings.position_embeddings)
+            # copy position embeddings over and over to initialize the new position embeddings
+            k = 0
+            step = current_max_pos
+            while k < max_pos - 1:
+                new_pos_embed[k:(k + step)] = self.model.bert.embeddings.position_embeddings.weight
+                k += step
+            print(new_pos_embed.shape)
+            self.model.bert.embeddings.position_embeddings.weight.data = new_pos_embed
+            self.model.bert.embeddings.position_ids.data = torch.tensor([i for i in range(max_pos)]).reshape(1, max_pos)
+            # model.bert.embeddings.position_ids = torch.from_numpy(
+            #     tf.range(new_pos_embed.shape[0], dtype=tf.int32).numpy()[tf.newaxis, :])
+            # model.bert.embeddings.position_embeddings = torch.nn.Embedding.from_pretrained(new_pos_embed)
+
+            # replace the `modeling_bert.BertSelfAttention` object with `LongformerSelfAttention`
             self.config.attention_window = [attention_window] * self.config.num_hidden_layers
             for i, layer in enumerate(self.model.bert.encoder.layer):
-                # replace the `modeling_bert.BertSelfAttention` object with `LongformerSelfAttention`
-                layer.attention.self = BertLongSelfAttention(self.config, layer_id=i)
+                longformer_self_attn = BertLongAttention(self.config, layer_id=i)
+                longformer_self_attn.query = layer.attention.self.query
+                longformer_self_attn.key = layer.attention.self.key
+                longformer_self_attn.value = layer.attention.self.value
+
+                longformer_self_attn.query_global = layer.attention.self.query
+                longformer_self_attn.key_global = layer.attention.self.key
+                longformer_self_attn.value_global = layer.attention.self.value
+
+                layer.attention.self = longformer_self_attn
+            # self.config.attention_window = [attention_window] * self.config.num_hidden_layers
+            # for i, layer in enumerate(self.model.bert.encoder.layer):
+            #     # replace the `modeling_bert.BertSelfAttention` object with `LongformerSelfAttention`
+            #     layer.attention.self = BertLongSelfAttention(self.config, layer_id=i)
 
         # print model layers and config
         print(self.config)

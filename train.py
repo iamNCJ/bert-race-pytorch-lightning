@@ -4,7 +4,6 @@ from pytorch_lightning import loggers as pl_loggers
 
 from data.RACEDataModule import RACEDataModule
 from model.BertForRace import BertForRace
-from plugins.ApexDDP import ApexDDP
 
 if __name__ == '__main__':
     tb_logger = pl_loggers.TensorBoardLogger('./result/asc01/')
@@ -14,6 +13,7 @@ if __name__ == '__main__':
         num_train_epochs=10,
         train_batch_size=8,
         train_all=False,
+        use_longformer=False,
     )
     dm = RACEDataModule(
         model_name_or_path='./model/bert-large-uncased',
@@ -25,7 +25,7 @@ if __name__ == '__main__':
     )
     trainer = pl.Trainer(
         logger=tb_logger,
-        gpus=1 if torch.cuda.is_available() else None,
+        gpus=-1 if torch.cuda.is_available() else None,
         # accelerator='ddp',
         amp_backend='apex',
         amp_level='O2',
