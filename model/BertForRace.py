@@ -15,8 +15,8 @@ class BertLongSelfAttention(LongformerSelfAttention):
         head_mask=None,
         encoder_hidden_states=None,
         encoder_attention_mask=None,
-        output_attentions=False,
-        **kwargs
+        past_key_value=None,
+        output_attentions=False
     ):
         return super().forward(hidden_states, attention_mask=attention_mask, output_attentions=output_attentions)
 
