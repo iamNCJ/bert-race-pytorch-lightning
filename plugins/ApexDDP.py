@@ -11,7 +11,6 @@ except ImportError:
     raise ImportError("Please install apex from https://www.github.com/nvidia/apex to run this example.")
 
 
-
 class ApexDDP(DDPPlugin):
     """
     trainer = Trainer(..., plugins=[ApexDDP()])
