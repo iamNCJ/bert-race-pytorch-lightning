@@ -48,30 +48,41 @@ conda activte [env]
 # then compile and install apex and other modules
 ```
 
+> Install `horovod`
+> 
+> ```bash
+> HOROVOD_NCCL_LIB=/usr/lib64/ HOROVOD_NCCL_INCLUDE=/usr/include/ HOROVOD_GPU_ALLREDUCE=NCCL HOROVOD_GPU_BROADCAST=NCCL HOROVOD_NCCL_LINK=SHARED pip install --no-cache-dir horovod
+> ```
+
 ## TODO
 
 - [x] PyTorch Lightening
 - [x] Transformer
 - [x] Refactor RACE Dataset Loader
-    - [x] Use `datasets` from `transformer`
-    - [x] Better Interface and Format
-    - [x] Faster Data Loading (Using rust & multi-process)
-    - [x] Cache Tokenized Results
-    - [x] Custom Datasets (Local loading)
+  - [x] Use `datasets` from `transformer`
+  - [x] Better Interface and Format
+  - [x] Faster Data Loading (Using rust & multi-process)
+  - [x] Cache Tokenized Results
+  - [x] Custom Datasets (Local loading)
 - [x] Mix Precision Training (Apex)
 - [x] TensorBoard Logging
-    - [x] Change Log Dir
-    - [ ] Add ASC Score to Log
+  - [x] Change Log Dir
+  - [ ] Add ASC Score to Log
 - [ ] Text Logging (Should be **same** as baseline code, override pl original progress bar)
 - [ ] Argparse
 - [x] Inference & Answer Saving
 - [x] Hyper Parameter Tuning (Optuna)
-    - [ ] More parameters
+  - [ ] More parameters
 - [x] Parallelism
+  - [x] FreeScale
 - [ ] Distributed
+    - [x] DDP
+    - [ ] Apex DDP
+    - [ ] Apex + Horovod
 - [x] ~~Cross Validation~~ (Useless)
 - [ ] Data Augmentation
 - [ ] Bert Model Tweak
 - [ ] Model Ensemble
 - [x] ~~Find Best Seed~~ (Useless, there will be new datasets and pre-trained model on-site)
 - [ ] Further Speedup Training Process
+  - [ ] LongFormer
