@@ -30,6 +30,7 @@ class BertForRace(pl.LightningModule):
             num_train_epochs: float = 3.0,
             train_batch_size: int = 32,
             warmup_proportion: float = 0.1,
+            attention_window: int = 128,
             train_all: bool = False,
             use_bert_adam: bool = True,
             use_longformer: bool = True,
@@ -49,7 +50,7 @@ class BertForRace(pl.LightningModule):
                 param.requires_grad = True
 
         if use_longformer:
-            self.config.attention_window = [self.config.max_position_embeddings] * self.config.num_hidden_layers
+            self.config.attention_window = [attention_window] * self.config.num_hidden_layers
             for i, layer in enumerate(self.model.bert.encoder.layer):
                 # replace the `modeling_bert.BertSelfAttention` object with `LongformerSelfAttention`
                 layer.attention.self = BertLongSelfAttention(self.config, layer_id=i)
