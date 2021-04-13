@@ -71,15 +71,14 @@ if __name__ == '__main__':
     trainer = pl.Trainer(
         logger=tb_logger,
         gpus=-1 if torch.cuda.is_available() else None,
-        plugins=DeepSpeedPlugin(deepspeed_config)
-        # accelerator='ddp',
+        plugins=DeepSpeedPlugin(deepspeed_config),
+        accelerator='ddp',
         # amp_backend='apex',
         # amp_level='O2',
-        # precision=16,
+        precision=16,
         # gradient_clip_val=1.0,
-        # max_epochs=20,
+        max_epochs=20,
         # accumulate_grad_batches=2,
-        # plugins=[ApexDDP()]
     )
     trainer.fit(model, dm)
     trainer.test(datamodule=dm)
