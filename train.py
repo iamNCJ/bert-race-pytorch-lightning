@@ -43,7 +43,7 @@ deepspeed_config = {
     "zero_optimization": {
         "stage": 2,  # Enable Stage 2 ZeRO (Optimizer/Gradient state partitioning)
         # "cpu_offload": True,  # Enable Offloading optimizer state/calculation to the host CPU
-        "contiguous_gradients": True,  # Reduce gradient fragmentation.
+        # "contiguous_gradients": True,  # Reduce gradient fragmentation.
         "overlap_comm": True,  # Overlap reduce/backward operation of gradients for speed.
         # "allgather_bucket_size": 2e8,  # Number of elements to all gather at once.
         # "reduce_bucket_size": 2e8,  # Number of elements we reduce/allreduce at once.
