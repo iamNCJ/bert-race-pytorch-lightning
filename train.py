@@ -71,7 +71,7 @@ if __name__ == '__main__':
     trainer = pl.Trainer(
         logger=tb_logger,
         gpus=-1 if torch.cuda.is_available() else None,
-        plugins=DeepSpeedPlugin(deepspeed_config),
+        plugins=DeepSpeedPlugin(config=deepspeed_config),
         accelerator='ddp',
         # amp_backend='apex',
         # amp_level='O2',
