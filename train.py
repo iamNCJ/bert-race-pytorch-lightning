@@ -56,15 +56,15 @@ if __name__ == '__main__':
         pretrained_model='./model/bert-large-uncased',
         learning_rate=2e-5,
         num_train_epochs=20,
-        train_batch_size=4,
+        train_batch_size=32,
         train_all=False,
         use_longformer=False,
     )
     dm = RACEDataModule(
         model_name_or_path='./model/bert-large-uncased',
         datasets_loader='./data/RACELocalLoader.py',
-        train_batch_size=4,
-        max_seq_length=512,
+        train_batch_size=32,
+        max_seq_length=128,
         num_workers=8,
         num_preprocess_processes=8,
     )
