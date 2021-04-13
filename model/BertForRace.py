@@ -31,10 +31,10 @@ class BertForRace(pl.LightningModule):
                 param.requires_grad = False
             for param in self.model.bert.pooler.parameters():
                 param.requires_grad = True
-            for param in self.model.bert.encoder.layer[16:24].parameters():
-                param.requires_grad = True
-            for param in self.model.bert.encoder.layer[15].output.parameters():
-                param.requires_grad = True
+            # for param in self.model.bert.encoder.layer[16:24].parameters():
+            #     param.requires_grad = True
+            # for param in self.model.bert.encoder.layer[15].output.parameters():
+            #     param.requires_grad = True
 
         if use_longformer:
             current_max_pos, embed_size = self.model.bert.embeddings.position_embeddings.weight.shape
