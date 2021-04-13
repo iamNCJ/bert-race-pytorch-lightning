@@ -27,18 +27,18 @@ deepspeed_config = {
             "warmup_num_steps": 100,
         }
     },
-    # "fp16": {
-    #     "enabled": True,
-    #     "loss_scale": 0,
-    #     "initial_scale_power": 32,
-    #     "loss_scale_window": 1000,
-    #     "hysteresis": 2,
-    #     "min_loss_scale": 1
-    # },
-    "amp": {
+    "fp16": {
         "enabled": True,
-        "opt_level": "O2",
+        "loss_scale": 0,
+        "initial_scale_power": 32,
+        "loss_scale_window": 1000,
+        "hysteresis": 2,
+        "min_loss_scale": 1
     },
+    # "amp": {
+    #     "enabled": True,
+    #     "opt_level": "O2",
+    # },
     "gradient_clipping": 1.0,
     "zero_optimization": {
         "stage": 2,  # Enable Stage 2 ZeRO (Optimizer/Gradient state partitioning)
