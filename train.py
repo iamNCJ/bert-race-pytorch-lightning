@@ -64,7 +64,7 @@ if __name__ == '__main__':
         model_name_or_path='./model/bert-large-uncased',
         datasets_loader='./data/RACELocalLoader.py',
         train_batch_size=4,
-        max_seq_length=512,
+        max_seq_length=128,
         num_workers=8,
         num_preprocess_processes=8,
     )
