@@ -27,14 +27,14 @@ deepspeed_config = {
             "warmup_num_steps": 100,
         }
     },
-    "fp16": {
-        "enabled": True,
-        "loss_scale": 0,
-        "initial_scale_power": 32,
-        "loss_scale_window": 1000,
-        "hysteresis": 2,
-        "min_loss_scale": 1
-    },
+    # "fp16": {
+    #     "enabled": True,
+    #     "loss_scale": 0,
+    #     "initial_scale_power": 32,
+    #     "loss_scale_window": 1000,
+    #     "hysteresis": 2,
+    #     "min_loss_scale": 1
+    # },
     "amp": {
         "enabled": True,
         "opt_level": "O2",
@@ -55,8 +55,8 @@ if __name__ == '__main__':
     model = BertForRace(
         pretrained_model='./model/bert-large-uncased',
         learning_rate=2e-5,
-        num_train_epochs=10,
-        train_batch_size=8,
+        num_train_epochs=20,
+        train_batch_size=4,
         train_all=False,
         use_longformer=False,
     )
