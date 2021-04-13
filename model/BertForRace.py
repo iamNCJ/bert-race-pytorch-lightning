@@ -31,9 +31,9 @@ class BertForRace(pl.LightningModule):
                 param.requires_grad = False
             for param in self.model.bert.pooler.parameters():
                 param.requires_grad = True
-            for param in self.model.bert.encoder.layer[18:24].parameters():
+            for param in self.model.bert.encoder.layer[16:24].parameters():
                 param.requires_grad = True
-            for param in self.model.bert.encoder.layer[17].output.parameters():
+            for param in self.model.bert.encoder.layer[15].output.parameters():
                 param.requires_grad = True
 
         if use_longformer:
