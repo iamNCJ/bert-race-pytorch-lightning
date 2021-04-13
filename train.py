@@ -57,7 +57,7 @@ if __name__ == '__main__':
         learning_rate=2e-5,
         num_train_epochs=20,
         train_batch_size=4,
-        train_all=Ture,
+        train_all=True,
         use_longformer=False,
     )
     dm = RACEDataModule(
