@@ -3,8 +3,10 @@ import torch
 from pytorch_lightning import loggers as pl_loggers
 from pytorch_lightning.plugins import DeepSpeedPlugin
 
+from pytorch_lightning.plugins import NativeMixedPrecisionPlugin, DDPPlugin
 from data.RACEDataModule import RACEDataModule
 from model.BertForRace import BertForRace
+from plugins.ApexDDPAccelerator import ApexDDPAccelerator
 
 deepspeed_config = {
     "zero_allow_untested_optimizer": True,
@@ -64,9 +66,13 @@ if __name__ == '__main__':
         num_workers=8,
         num_preprocess_processes=8,
     )
+    accelerator = ApexDDPAccelerator(
+        precision_plugin=NativeMixedPrecisionPlugin(),
+        training_type_plugin=DDPPlugin(),
+    )
     trainer = pl.Trainer(
         logger=tb_logger,
-        accelerator='horovod',
+        accelerator=accelerator,
         gpus=1,
         amp_backend='apex',
         amp_level='O2',

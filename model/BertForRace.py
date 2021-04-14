@@ -189,8 +189,8 @@ if __name__ == '__main__':
     dm = RACEDataModule()
     trainer = pl.Trainer(
         gpus=-1 if torch.cuda.is_available() else None,
-        amp_level='O2',
-        precision=16,
+        # amp_level='O2',
+        # precision=16,
         gradient_clip_val=1.0,
         max_epochs=5
     )
