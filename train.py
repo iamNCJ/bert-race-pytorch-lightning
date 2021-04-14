@@ -60,21 +60,32 @@ if __name__ == '__main__':
         model_name_or_path='./model/bert-large-uncased',
         datasets_loader='./data/RACELocalLoader.py',
         train_batch_size=4,
-        max_seq_length=512,
+        max_seq_length=128,
         num_workers=8,
         num_preprocess_processes=8,
     )
     trainer = pl.Trainer(
         logger=tb_logger,
-        gpus=-1 if torch.cuda.is_available() else None,
-        plugins=DeepSpeedPlugin(config=deepspeed_config),
-        accelerator='ddp',
-        # amp_backend='apex',
-        # amp_level='O2',
+        accelerator='horovod',
+        gpus=1,
+        amp_backend='apex',
+        amp_level='O2',
         precision=16,
-        # gradient_clip_val=1.0,
+        gradient_clip_val=1.0,
         max_epochs=20,
         # accumulate_grad_batches=2,
     )
+    # trainer = pl.Trainer(
+    #     logger=tb_logger,
+    #     gpus=-1 if torch.cuda.is_available() else None,
+    #     plugins=DeepSpeedPlugin(config=deepspeed_config),
+    #     accelerator='ddp',
+    #     # amp_backend='apex',
+    #     # amp_level='O2',
+    #     precision=16,
+    #     # gradient_clip_val=1.0,
+    #     max_epochs=20,
+    #     # accumulate_grad_batches=2,
+    # )
     trainer.fit(model, dm)
     trainer.test(datamodule=dm)
