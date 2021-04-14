@@ -77,12 +77,14 @@ conda activte [env]
   - [x] FreeScale
 - [ ] Distributed
     - [x] DDP
-    - [ ] Apex DDP
+    - [x] ~~Apex DDP~~ (Given up)
     - [ ] Apex + Horovod
 - [x] ~~Cross Validation~~ (Useless)
 - [ ] Data Augmentation
-- [ ] Bert Model Tweak
+- [ ] Model Tweak
+  - [ ] DCMN
+  - [ ] Use features from previous layers
 - [ ] Model Ensemble
 - [x] ~~Find Best Seed~~ (Useless, there will be new datasets and pre-trained model on-site)
 - [ ] Further Speedup Training Process
-  - [ ] LongFormer
+  - [x] ~~LongFormer~~ (Seems useless)
