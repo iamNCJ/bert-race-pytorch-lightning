@@ -115,10 +115,10 @@ class RACEDataModule(pl.LightningDataModule):
             "input_ids": torch.cat([cf["input_ids"] for cf in choices_features]).reshape(-1),
             "attention_mask": torch.cat([cf["attention_mask"] for cf in choices_features]).reshape(-1),
             "token_type_ids": torch.cat([cf["token_type_ids"] for cf in choices_features]).reshape(-1),
-            "article_len": torch.Tensor([cf["article_len"] for cf in choices_features]),
-            "question_len": torch.Tensor([question_len] * 4),
+            "article_len": torch.Tensor([cf["article_len"] for cf in choices_features], dtype=torch.long),
+            "question_len": torch.Tensor([question_len] * 4, dtype=torch.long),
             # "question_len": torch.Tensor([cf["question_len"] for cf in choices_features]),
-            "option_len": torch.Tensor([cf["option_len"] for cf in choices_features]),
+            "option_len": torch.Tensor([cf["option_len"] for cf in choices_features], dtype=torch.long),
         }
 
 
