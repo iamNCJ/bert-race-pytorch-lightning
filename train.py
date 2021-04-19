@@ -66,14 +66,14 @@ if __name__ == '__main__':
         num_workers=8,
         num_preprocess_processes=8,
     )
-    accelerator = ApexDDPAccelerator(
-        precision_plugin=NativeMixedPrecisionPlugin(),
-        training_type_plugin=DDPPlugin(),
-    )
+    # accelerator = ApexDDPAccelerator(
+    #     precision_plugin=NativeMixedPrecisionPlugin(),
+    #     training_type_plugin=DDPPlugin(),
+    # )
     trainer = pl.Trainer(
         logger=tb_logger,
-        accelerator=accelerator,
-        gpus=1,
+        # accelerator=accelerator,
+        gpus=-1 if torch.cuda.is_available() else None,
         amp_backend='apex',
         amp_level='O2',
         precision=16,
