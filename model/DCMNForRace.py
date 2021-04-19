@@ -45,7 +45,7 @@ class DCMNForRace(pl.LightningModule):
 
         # print model layers and config
         print(self.config)
-        for name, params in self.model.named_parameters():
+        for name, params in self.named_parameters():
             print('-->name:', name, '-->grad_require:', params.requires_grad)
 
         self.learning_rate = learning_rate
