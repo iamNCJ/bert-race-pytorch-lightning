@@ -70,7 +70,7 @@ class DCMNForRace(pl.LightningModule):
 
     def configure_optimizers(self):
         # Prepare optimizer
-        param_optimizer = list(self.model.named_parameters())
+        param_optimizer = list(self.named_parameters())
 
         # hack to remove pooler, which is not used
         # thus it produce None grad that break apex
@@ -165,7 +165,7 @@ class DCMNForRace(pl.LightningModule):
             return match_reshaped_logits
 
     def compute(self, batch):
-        outputs = self.model(
+        outputs = self(
             input_ids=batch['input_ids'].reshape(batch['input_ids'].shape[0], 4, -1),
             token_type_ids=batch['token_type_ids'].reshape(batch['token_type_ids'].shape[0], 4, -1),
             attention_mask=batch['attention_mask'].reshape(batch['attention_mask'].shape[0], 4, -1),
