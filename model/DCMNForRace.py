@@ -161,7 +161,7 @@ class DCMNForRace(pl.LightningModule):
         if labels is not None:
             loss_fct = CrossEntropyLoss()
             match_loss = loss_fct(match_reshaped_logits, labels)
-            return match_loss
+            return match_loss, match_reshaped_logits
         else:
             return match_reshaped_logits
 
@@ -175,9 +175,9 @@ class DCMNForRace(pl.LightningModule):
             option_len=batch['option_len'],
             labels=batch['label'],
         )
-        labels_hat = torch.argmax(outputs.logits, dim=1)
+        labels_hat = torch.argmax(outputs[1], dim=1)
         correct_count = torch.sum(batch['label'] == labels_hat)
-        return outputs.loss, correct_count
+        return outputs[0], correct_count
 
     def training_step(self, batch, batch_idx):
         loss, correct_count = self.compute(batch)
