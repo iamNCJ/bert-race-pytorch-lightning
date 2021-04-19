@@ -2,6 +2,7 @@ from functools import partial
 from typing import Optional, Dict
 
 import datasets
+import numpy as np
 import pytorch_lightning as pl
 import torch
 from torch.utils.data import DataLoader, RandomSampler, SequentialSampler
@@ -76,25 +77,33 @@ class RACEDataModule(pl.LightningDataModule):
     def preprocess(tokenizer: BertTokenizerFast, max_seq_length: int, x: Dict) -> Dict:
         choices_features = []
         label_map = {"A": 0, "B": 1, "C": 2, "D": 3}
+        question = x["question"]
+        question_len = len(tokenizer.tokenize(question))
 
         option: str
         for option in x["options"]:
-            question = x["question"]
-            if question.find("_") != -1:
-                # fill in the banks questions
-                question_option = question.replace("_", option)
-            else:
-                question_option = question + " [SEP] " + option
+            question_option = question + option
+            # if question.find("_") != -1:
+            #     # fill in the banks questions
+            #     question_option = question.replace("_", option)
+            # else:
+            #     question_option = question + " [SEP] " + option
+            option_len = len(tokenizer.tokenize(option))
 
             inputs = tokenizer(
                 x["article"],
                 question_option,
                 add_special_tokens=True,
                 max_length=max_seq_length,
-                truncation=True,
+                truncation='only_first',
                 padding='max_length',
                 return_tensors='pt'
             )
+            token_type_ids = np.array(inputs['token_type_ids'])
+            inputs['article_len'] = int(np.where(token_type_ids == 1)[1][0]) - 2
+            # inputs['question_len'] = question_len
+            inputs['option_len'] = option_len
+
             choices_features.append(inputs)
 
         labels = label_map.get(x["answer"], -1)
@@ -105,6 +114,10 @@ class RACEDataModule(pl.LightningDataModule):
             "input_ids": torch.cat([cf["input_ids"] for cf in choices_features]).reshape(-1),
             "attention_mask": torch.cat([cf["attention_mask"] for cf in choices_features]).reshape(-1),
             "token_type_ids": torch.cat([cf["token_type_ids"] for cf in choices_features]).reshape(-1),
+            "article_len": torch.Tensor([cf["article_len"] for cf in choices_features]),
+            "question_len": torch.Tensor([question_len] * 4),
+            # "question_len": torch.Tensor([cf["question_len"] for cf in choices_features]),
+            "option_len": torch.Tensor([cf["option_len"] for cf in choices_features]),
         }
 
 
