@@ -72,16 +72,20 @@ class DCMNForRace(pl.LightningModule):
 
     def configure_optimizers(self):
         # Prepare optimizer
-        param_optimizer = list(self.named_parameters())
+        bert_param_optimizer = list(self.bert.named_parameters())
 
         # hack to remove pooler, which is not used
         # thus it produce None grad that break apex
-        param_optimizer = [n for n in param_optimizer if 'pooler' not in n[0]]
+        bert_param_optimizer = [n for n in bert_param_optimizer if 'pooler' not in n[0]]
 
         no_decay = ['bias', 'LayerNorm.bias', 'LayerNorm.weight']
         optimizer_grouped_parameters = [
-            {'params': [p for n, p in param_optimizer if not any(nd in n for nd in no_decay)], 'weight_decay': 0.01},
-            {'params': [p for n, p in param_optimizer if any(nd in n for nd in no_decay)], 'weight_decay': 0.0}
+            {'params': [p for n, p in bert_param_optimizer if not any(nd in n for nd in no_decay)], 'weight_decay': 0.01},
+            {'params': [p for n, p in bert_param_optimizer if any(nd in n for nd in no_decay)], 'weight_decay': 0.0},
+            {'params': self.fuse.named_parameters(), 'lr': 1e-4},
+            {'params': self.classifier.named_parameters(), 'lr': 1e-4},
+            {'params': self.ssmatch.named_parameters(), 'lr': 1e-4},
+            {'params': self.pooler.named_parameters(), 'lr': 1e-4},
         ]
         optimizer = AdamW(
             optimizer_grouped_parameters,
