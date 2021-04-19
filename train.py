@@ -19,8 +19,8 @@ if __name__ == '__main__':
         datasets_loader='./data/RACELocalLoader.py',
         train_batch_size=4,
         max_seq_length=512,
-        num_workers=48,
-        num_preprocess_processes=8,
+        num_workers=8,
+        num_preprocess_processes=48,
     )
     trainer = pl.Trainer(
         logger=tb_logger,
