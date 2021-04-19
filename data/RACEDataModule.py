@@ -48,7 +48,8 @@ class RACEDataModule(pl.LightningDataModule):
                 num_proc=self.num_preprocess_processes,
             )
             self.dataset[split].set_format(type='torch',
-                                           columns=['input_ids', 'token_type_ids', 'attention_mask', 'label'])
+                                           columns=['input_ids', 'token_type_ids', 'attention_mask', 'article_len',
+                                                    'question_len', 'option_len', 'label'])
 
     def prepare_data(self):
         datasets.load_dataset(self.dataset_loader, self.task_name)
