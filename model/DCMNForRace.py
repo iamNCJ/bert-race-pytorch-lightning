@@ -16,6 +16,7 @@ class DCMNForRace(pl.LightningModule):
     def __init__(
             self,
             pretrained_model: str = 'bert-large-uncased',
+            num_choices: int = 4,
             learning_rate: float = 2e-5,
             gradient_accumulation_steps: int = 1,
             num_train_epochs: float = 3.0,
@@ -27,6 +28,7 @@ class DCMNForRace(pl.LightningModule):
         super().__init__()
         self.config = BertConfig.from_pretrained(pretrained_model, num_choices=4)
         self.bert = BertModel.from_pretrained(pretrained_model, config=self.config)
+        self.num_choices = num_choices
         self.dropout = nn.Dropout(self.config.hidden_dropout_prob)
         self.classifier = nn.Linear(3 * self.config.hidden_size, 1)
         self.ssmatch = SSingleMatchNet(self.config)
