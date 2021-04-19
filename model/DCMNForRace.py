@@ -34,13 +34,13 @@ class DCMNForRace(pl.LightningModule):
         self.fuse = FuseNet(self.config)
 
         if not train_all:
-            for param in self.model.bert.parameters():
+            for param in self.bert.parameters():
                 param.requires_grad = False
-            for param in self.model.bert.pooler.parameters():
+            for param in self.bert.pooler.parameters():
                 param.requires_grad = True
-            # for param in self.model.bert.encoder.layer[15:24].parameters():
+            # for param in self.bert.encoder.layer[15:24].parameters():
             #     param.requires_grad = True
-            # for param in self.model.bert.encoder.layer[15].output.parameters():
+            # for param in self.bert.encoder.layer[15].output.parameters():
             #     param.requires_grad = True
 
         # print model layers and config
