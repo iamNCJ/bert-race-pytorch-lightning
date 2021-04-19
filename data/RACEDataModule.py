@@ -108,17 +108,17 @@ class RACEDataModule(pl.LightningDataModule):
             choices_features.append(inputs)
 
         labels = label_map.get(x["answer"], -1)
-        label = torch.LongTensor(labels)
+        label = torch.tensor(labels).long()
 
         return {
             "label": label,
             "input_ids": torch.cat([cf["input_ids"] for cf in choices_features]).reshape(-1),
             "attention_mask": torch.cat([cf["attention_mask"] for cf in choices_features]).reshape(-1),
             "token_type_ids": torch.cat([cf["token_type_ids"] for cf in choices_features]).reshape(-1),
-            "article_len": torch.LongTensor([cf["article_len"] for cf in choices_features]),
-            "question_len": torch.LongTensor([question_len] * 4),
+            "article_len": torch.tensor([cf["article_len"] for cf in choices_features]).long(),
+            "question_len": torch.tensor([question_len] * 4).long(),
             # "question_len": torch.Tensor([cf["question_len"] for cf in choices_features]),
-            "option_len": torch.LongTensor([cf["option_len"] for cf in choices_features]),
+            "option_len": torch.tensor([cf["option_len"] for cf in choices_features]).long(),
         }
 
 
