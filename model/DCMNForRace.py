@@ -28,7 +28,7 @@ class DCMNForRace(pl.LightningModule):
         self.config = BertConfig.from_pretrained(pretrained_model, num_choices=4)
         self.bert = BertModel.from_pretrained(pretrained_model, config=self.config)
         self.dropout = nn.Dropout(self.config.hidden_dropout_prob)
-        self.classifier = nn.Linear(4 * self.config.hidden_size, 1)
+        self.classifier = nn.Linear(3 * self.config.hidden_size, 1)
         self.ssmatch = SSingleMatchNet(self.config)
         self.pooler = BertPooler(self.config)
         self.fuse = FuseNet(self.config)
