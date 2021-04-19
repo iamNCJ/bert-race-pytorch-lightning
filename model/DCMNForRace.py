@@ -128,10 +128,10 @@ class DCMNForRace(pl.LightningModule):
         flat_token_type_ids = token_type_ids.view(-1, token_type_ids.size(-1))
         flat_attention_mask = attention_mask.view(-1, attention_mask.size(-1))
 
-        sequence_output, _ = self.bert(flat_input_ids, flat_token_type_ids, flat_attention_mask)
+        outputs = self.bert(flat_input_ids, flat_token_type_ids, flat_attention_mask)
+        sequence_output = outputs[1]
 
-        doc_ques_seq_output, ques_option_seq_output, doc_seq_output, ques_seq_output, option_seq_output = \
-            self.seperate_seq(sequence_output, doc_len, ques_len, option_len)
+        _, _, doc_seq_output, ques_seq_output, option_seq_output = self.seperate_seq(sequence_output, doc_len, ques_len, option_len)
 
         pa_output = self.ssmatch([doc_seq_output, option_seq_output, option_len + 1])
         ap_output = self.ssmatch([option_seq_output, doc_seq_output, doc_len + 1])
