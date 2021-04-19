@@ -57,7 +57,6 @@ if __name__ == '__main__':
         num_train_epochs=20,
         train_batch_size=4,
         train_all=False,
-        use_longformer=False,
     )
     dm = RACEDataModule(
         model_name_or_path='./model/bert-large-uncased',
