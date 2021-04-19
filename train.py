@@ -1,12 +1,13 @@
 import pytorch_lightning as pl
 import torch
 from pytorch_lightning import loggers as pl_loggers
-from pytorch_lightning.plugins import DeepSpeedPlugin
+# from pytorch_lightning.plugins import DeepSpeedPlugin
 
-from pytorch_lightning.plugins import NativeMixedPrecisionPlugin, DDPPlugin
+# from pytorch_lightning.plugins import NativeMixedPrecisionPlugin, DDPPlugin
 from data.RACEDataModule import RACEDataModule
-from model.BertForRace import BertForRace
-from plugins.ApexDDPAccelerator import ApexDDPAccelerator
+# from model.BertForRace import BertForRace
+from model.DCMNForRace import DCMNForRace
+# from plugins.ApexDDPAccelerator import ApexDDPAccelerator
 
 deepspeed_config = {
     "zero_allow_untested_optimizer": True,
@@ -50,7 +51,7 @@ deepspeed_config = {
 
 if __name__ == '__main__':
     tb_logger = pl_loggers.TensorBoardLogger('./result/asc01/')
-    model = BertForRace(
+    model = DCMNForRace(
         pretrained_model='./model/bert-large-uncased',
         learning_rate=2e-5,
         num_train_epochs=20,
