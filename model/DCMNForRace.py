@@ -73,7 +73,7 @@ class DCMNForRace(pl.LightningModule):
     def configure_optimizers(self):
         # Prepare optimizer
         bert_param_optimizer = list(self.bert.named_parameters())
-        classifer_param_optimizer = list(self.classifer.named_parameters())
+        classifer_param_optimizer = list(self.classifier.named_parameters())
         ssmatch_param_optimizer = list(self.ssmatch.named_parameters())
         fuse_param_optimizer = list(self.fuse.named_parameters())
 
