@@ -95,7 +95,7 @@ class RACEDataModule(pl.LightningDataModule):
                 question_option,
                 add_special_tokens=True,
                 max_length=max_seq_length,
-                truncation='only_first',
+                truncation=True,
                 padding='max_length',
                 return_tensors='pt'
             )
