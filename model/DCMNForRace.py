@@ -72,22 +72,22 @@ class DCMNForRace(pl.LightningModule):
 
     def configure_optimizers(self):
         # Prepare optimizer
-        bert_param_optimizer = list(self.bert.named_parameters())
-        classifer_param_optimizer = list(self.classifier.named_parameters())
-        ssmatch_param_optimizer = list(self.ssmatch.named_parameters())
-        fuse_param_optimizer = list(self.fuse.named_parameters())
+        param_optimizer = list(self.bert.named_parameters())
+        # classifer_param_optimizer = list(self.classifier.named_parameters())
+        # ssmatch_param_optimizer = list(self.ssmatch.named_parameters())
+        # fuse_param_optimizer = list(self.fuse.named_parameters())
 
         # hack to remove pooler, which is not used
         # thus it produce None grad that break apex
-        bert_param_optimizer = [n for n in bert_param_optimizer if 'pooler' not in n[0]]
+        param_optimizer = [n for n in param_optimizer if 'pooler' not in n[0]]
 
         no_decay = ['bias', 'LayerNorm.bias', 'LayerNorm.weight']
         optimizer_grouped_parameters = [
-            {'params': [p for n, p in bert_param_optimizer if not any(nd in n for nd in no_decay)], 'weight_decay': 0.01},
-            {'params': [p for n, p in bert_param_optimizer if any(nd in n for nd in no_decay)], 'weight_decay': 0.0},
-            {'params': [p for n, p in classifer_param_optimizer]},
-            {'params': [p for n, p in ssmatch_param_optimizer]},
-            {'params': [p for n, p in fuse_param_optimizer]},
+            {'params': [p for n, p in param_optimizer if not any(nd in n for nd in no_decay)], 'weight_decay': 0.01},
+            {'params': [p for n, p in param_optimizer if any(nd in n for nd in no_decay)], 'weight_decay': 0.0},
+            # {'params': [p for n, p in classifer_param_optimizer]},
+            # {'params': [p for n, p in ssmatch_param_optimizer]},
+            # {'params': [p for n, p in fuse_param_optimizer]},
             # {'params': list(self.pooler.named_parameters()), 'lr': 1e-4},
         ]
         optimizer = AdamW(
