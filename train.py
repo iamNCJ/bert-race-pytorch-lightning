@@ -25,7 +25,6 @@ if __name__ == '__main__':
         num_preprocess_processes=48,
     )
     checkpoint_callback = ModelCheckpoint(
-        monitor='epoch',
         dirpath='./result/checkpoints/',
         filename='epoch{epoch:02d}'
     )

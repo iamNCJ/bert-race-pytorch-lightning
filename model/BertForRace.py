@@ -20,7 +20,7 @@ class BertForRace(pl.LightningModule):
             attention_window: int = 128,
             train_all: bool = False,
             use_bert_adam: bool = True,
-            use_longformer: bool = True,
+            use_longformer: bool = False,
     ):
         super().__init__()
         self.config = BertConfig.from_pretrained(pretrained_model, num_choices=4)
