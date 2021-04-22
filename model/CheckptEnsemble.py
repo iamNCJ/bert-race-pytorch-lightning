@@ -1,23 +1,20 @@
-from typing import Any, List
+from typing import List
 
 import pytorch_lightning as pl
 import torch
-from transformers import BertConfig, BertForMultipleChoice, LongformerSelfAttention, AdamW, get_linear_schedule_with_warmup
-
-from data.RACEDataModule import RACEDataModule
-from model.BertLongAttention import BertLongAttention
 
 from model.BertForRace import BertForRace
-import os
+
 
 class CheckptEnsemble(pl.LightningModule):
     def __init__(self, checkpoints: List[str]):
-        self.models = [BertForRace.load_from_checkpoint(ckpt) for ckpt in checkpoints]
+        self.models = [BertForRace(pretrained_model='./model/bert-large-uncased').load_from_checkpoint(ckpt)
+                       for ckpt in checkpoints]
 
     def forward(self, **inputs):
         outputs = [model(inputs) for model in self.models]
         return outputs
-    
+
     def predict_step(self, batch, batch_idx):
         outputs = self(
             input_ids=batch['input_ids'].reshape(batch['input_ids'].shape[0], 4, -1),
