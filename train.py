@@ -6,6 +6,7 @@ from pytorch_lightning.callbacks import ModelCheckpoint
 from data.RACEDataModule import RACEDataModule
 from model.DCMNForRace import DCMNForRace
 
+
 if __name__ == '__main__':
     tb_logger = pl_loggers.TensorBoardLogger('./result/asc01/')
     model = DCMNForRace(
@@ -24,6 +25,7 @@ if __name__ == '__main__':
         num_preprocess_processes=48,
     )
     checkpoint_callback = ModelCheckpoint(
+        monitor='epoch',
         dirpath='./result/checkpoints/',
         filename='epoch{epoch:02d}'
     )
