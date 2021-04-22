@@ -7,7 +7,8 @@ from transformers import BertConfig, BertForMultipleChoice, LongformerSelfAttent
 from data.RACEDataModule import RACEDataModule
 from model.BertLongAttention import BertLongAttention
 
-import BertForRace
+from model.BertForRace import BertForRace
+import os
 
 class CheckptEnsemble(pl.LightningModule):
     def __init__(self, checkpoints: List[str]):

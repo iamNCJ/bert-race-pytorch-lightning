@@ -7,9 +7,13 @@ from data.RACEDataModule import RACEDataModule
 from model.BertForRace import BertForRace
 from model.CheckptEnsemble import CheckptEnsemble
 
+import os
+
 if __name__ == '__main__':
     tb_logger = pl_loggers.TensorBoardLogger('./result/asc02/')
-    model = CheckptEnsemble(os.listdir("/home/zchong/RACE/bert-race-pytorch-lightening/result/checkpoints"))
+    ckpt_names = os.listdir("./result/checkpoints")
+    ckpt_paths = ["./result/checkpoints/" + name for name in ckpt_names]
+    model = CheckptEnsemble(ckpt_paths)
     dm = RACEDataModule(
         model_name_or_path='./model/bert-large-uncased',
         datasets_loader='./data/RACELocalLoader.py',
