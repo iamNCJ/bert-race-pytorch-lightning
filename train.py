@@ -4,12 +4,12 @@ from pytorch_lightning import loggers as pl_loggers
 from pytorch_lightning.callbacks import ModelCheckpoint
 
 from data.RACEDataModule import RACEDataModule
-from model.DCMNForRace import DCMNForRace
+from model.BertForRace import BertForRace
 
 
 if __name__ == '__main__':
     tb_logger = pl_loggers.TensorBoardLogger('./result/asc01/')
-    model = DCMNForRace(
+    model = BertForRace(
         pretrained_model='./model/bert-large-uncased',
         learning_rate=2e-5,
         num_train_epochs=6,
