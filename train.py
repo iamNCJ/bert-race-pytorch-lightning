@@ -41,6 +41,7 @@ if __name__ == '__main__':
         max_epochs=4,
         plugins='ddp_sharded',
         val_check_interval=0.2,
+        limit_train_batches=0.1,
         # accumulate_grad_batches=2,
     )
     trainer.fit(model, dm)
