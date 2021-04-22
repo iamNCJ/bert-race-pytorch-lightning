@@ -26,7 +26,8 @@ if __name__ == '__main__':
     )
     checkpoint_callback = ModelCheckpoint(
         dirpath='./result/checkpoints/',
-        filename='epoch{epoch:02d}'
+        filename='epoch{epoch:02d}',
+        save_top_k=-1,
     )
     trainer = pl.Trainer(
         logger=tb_logger,
