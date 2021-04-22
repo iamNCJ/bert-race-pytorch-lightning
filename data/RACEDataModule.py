@@ -20,6 +20,8 @@ class RACEDataModule(pl.LightningDataModule):
             eval_batch_size: int = 32,
             num_workers: int = 8,
             num_preprocess_processes: int = 8,
+            use_sentence_selection: bool = True,
+            best_k_sentences: int = 5,
             **kwargs
     ):
         super().__init__()
@@ -31,6 +33,8 @@ class RACEDataModule(pl.LightningDataModule):
         self.eval_batch_size = eval_batch_size
         self.num_workers = num_workers
         self.num_preprocess_processes = num_preprocess_processes
+        self.use_sentence_selection = use_sentence_selection
+        self.best_k_sentences = best_k_sentences
 
         self.tokenizer = BertTokenizerFast.from_pretrained(self.model_name_or_path, use_fast=True, do_lower_case=True)
         self.dataset = None
@@ -38,7 +42,8 @@ class RACEDataModule(pl.LightningDataModule):
     def setup(self, stage: Optional[str] = None):
         self.dataset = datasets.load_dataset(self.dataset_loader, self.task_name)
 
-        preprocessor = partial(self.preprocess, self.tokenizer, self.max_seq_length)
+        preprocessor = partial(self.preprocess, self.tokenizer, self.max_seq_length, self.use_sentence_selection,
+                               self.best_k_sentences)
 
         for split in self.dataset.keys():
             self.dataset[split] = self.dataset[split].map(
@@ -75,10 +80,28 @@ class RACEDataModule(pl.LightningDataModule):
 
     # auto cache tokens
     @staticmethod
-    def preprocess(tokenizer: BertTokenizerFast, max_seq_length: int, x: Dict) -> Dict:
+    def preprocess(tokenizer: BertTokenizerFast, max_seq_length: int, use_sentence_selection: bool,
+                   best_k_sentences: int, x: Dict) -> Dict:
         choices_features = []
         label_map = {"A": 0, "B": 1, "C": 2, "D": 3}
         question = x["question"]
+        article = x['article']
+        if use_sentence_selection:
+            qa = [question + option for option in x["options"]]
+
+            question_tokens = np.array(tokenizer(qa, add_special_tokens=False, truncation=True, max_length=25,
+                                                 padding='max_length')['input_ids'])
+            sentences = article.split('.')
+            sentences_tokens = np.array(tokenizer(sentences, add_special_tokens=False, truncation=True, max_length=25,
+                                                  padding='max_length')['input_ids'])
+            sentence_scores = np.dot(sentences_tokens, question_tokens.T) / (np.linalg.norm(
+                sentences_tokens, axis=1).reshape(-1, 1) @ np.linalg.norm(
+                question_tokens, axis=1).reshape(1, -1))
+            max_sentence_score = np.max(sentence_scores, axis=1)
+            best_sentence_indices = max_sentence_score.argsort()[-best_k_sentences:][::-1]
+
+            article = '.'.join([sentences[i] for i in best_sentence_indices])
+
         question_len = len(tokenizer.tokenize(question))
 
         option: str
@@ -92,7 +115,7 @@ class RACEDataModule(pl.LightningDataModule):
             option_len = len(tokenizer.tokenize(option))
 
             inputs = tokenizer(
-                x["article"],
+                article,
                 question_option,
                 add_special_tokens=True,
                 max_length=max_seq_length,

@@ -20,9 +20,10 @@ if __name__ == '__main__':
         model_name_or_path='./model/bert-large-uncased',
         datasets_loader='./data/RACELocalLoader.py',
         train_batch_size=4,
-        max_seq_length=512,
+        max_seq_length=128,
         num_workers=8,
         num_preprocess_processes=48,
+        use_sentence_selection=True,
     )
     checkpoint_callback = ModelCheckpoint(
         dirpath='./result/checkpoints/',
@@ -32,7 +33,7 @@ if __name__ == '__main__':
     trainer = pl.Trainer(
         logger=tb_logger,
         gpus=-1 if torch.cuda.is_available() else None,
-        callbacks=[checkpoint_callback],
+        # callbacks=[checkpoint_callback],
         amp_backend='native',
         amp_level='O2',
         precision=16,
@@ -41,8 +42,8 @@ if __name__ == '__main__':
         max_epochs=4,
         plugins='ddp_sharded',
         val_check_interval=0.2,
-        limit_train_batches=0.1,
-        limit_val_batches=0.1,
+        # limit_train_batches=0.1,
+        # limit_val_batches=0.1,
         # accumulate_grad_batches=2,
     )
     trainer.fit(model, dm)
