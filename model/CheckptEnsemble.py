@@ -8,8 +8,12 @@ from model.BertForRace import BertForRace
 
 class CheckptEnsemble(pl.LightningModule):
     def __init__(self, checkpoints: List[str]):
-        self.models = [BertForRace(pretrained_model='./model/bert-large-uncased').load_from_checkpoint(ckpt)
-                       for ckpt in checkpoints]
+        self.models = []
+        for index, ckpt in enumerate(checkpoints):
+            self.models.append(BertForRace(pretrained_model='./model/bert-large-uncased').load_from_checkpoint(ckpt))
+            print(str(index) + " " + ckpt)
+        # self.models = [BertForRace(pretrained_model='./model/bert-large-uncased').load_from_checkpoint(ckpt)
+        #                for ckpt in checkpoints]
 
     def forward(self, **inputs):
         outputs = [model(inputs) for model in self.models]
