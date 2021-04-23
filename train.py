@@ -12,7 +12,7 @@ if __name__ == '__main__':
     pl.seed_everything(42)
     model = DCMNForRace(
         pretrained_model='./model/bert-large-uncased',
-        learning_rate=2e-5,
+        learning_rate=1e-5,
         num_train_epochs=20,
         train_batch_size=4,
         train_all=True,
@@ -21,7 +21,7 @@ if __name__ == '__main__':
         model_name_or_path='./model/bert-large-uncased',
         datasets_loader='./data/RACELocalLoader.py',
         train_batch_size=4,
-        max_seq_length=256,
+        max_seq_length=512,
         num_workers=8,
         num_preprocess_processes=48,
         use_sentence_selection=False,
