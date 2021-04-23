@@ -9,6 +9,7 @@ from model.DCMNForRace import DCMNForRace
 
 if __name__ == '__main__':
     tb_logger = pl_loggers.TensorBoardLogger('./result/asc01/')
+    pl.seed_everything(42)
     model = DCMNForRace(
         pretrained_model='./model/bert-large-uncased',
         learning_rate=2e-5,
@@ -20,7 +21,7 @@ if __name__ == '__main__':
         model_name_or_path='./model/bert-large-uncased',
         datasets_loader='./data/RACELocalLoader.py',
         train_batch_size=4,
-        max_seq_length=512,
+        max_seq_length=256,
         num_workers=8,
         num_preprocess_processes=48,
         use_sentence_selection=False,
