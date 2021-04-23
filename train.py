@@ -12,7 +12,7 @@ if __name__ == '__main__':
     model = DCMNForRace(
         pretrained_model='./model/bert-large-uncased',
         learning_rate=2e-5,
-        num_train_epochs=6,
+        num_train_epochs=20,
         train_batch_size=4,
         train_all=True,
     )
