@@ -67,24 +67,26 @@ conda activte [env]
 - [x] Mix Precision Training (Apex)
 - [x] TensorBoard Logging
   - [x] Change Log Dir
-  - [ ] Add ASC Score to Log
-- [ ] Text Logging (Should be **same** as baseline code, override pl original progress bar)
-- [ ] Argparse
+- [x] Text Logging (Should be **same** as baseline code, ~~override pl original progress bar~~, will be done after ejection)
+- [x] ~~Argparse~~ (Not that important)
 - [x] Inference & Answer Saving
 - [x] Hyper Parameter Tuning (Optuna)
   - [ ] More parameters
 - [x] Parallelism
   - [x] FreeScale
-- [ ] Distributed
+- [x] Distributed (Will be done after ejection)
     - [x] DDP
     - [x] ~~Apex DDP~~ (Given up)
-    - [ ] Apex + Horovod
+    - [x] ~~Apex + Horovod~~ (Given up)
 - [x] ~~Cross Validation~~ (Useless)
-- [ ] Data Augmentation
+- [x] ~~Data Augmentation~~ (Useless)
 - [ ] Model Tweak
-  - [ ] DCMN
+  - [x] DCMN (Buggy)
+  - [x] Sentence Selection
+  - [ ] Sliding Window
   - [ ] Use features from previous layers
-- [ ] Model Ensemble
+- [x] Model Ensemble (Buggy, will be done after ejection)
 - [x] ~~Find Best Seed~~ (Useless, there will be new datasets and pre-trained model on-site)
-- [ ] Further Speedup Training Process
+- [x] Further Speedup Training Process
   - [x] ~~LongFormer~~ (Seems useless)
+  - [x] ~~Nvidia Bert~~ (Will be done in )
