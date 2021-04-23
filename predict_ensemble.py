@@ -9,9 +9,11 @@ from model.CheckptEnsemble import CheckptEnsemble
 
 import os
 
+ckpt_names = ["epochepoch=00-v7.ckpt", "epochepoch=01-v5.ckpt", "epochepoch=02-v4.ckpt", "epochepoch=03-v5.ckpt"]
+
 if __name__ == '__main__':
     tb_logger = pl_loggers.TensorBoardLogger('./result/asc02/')
-    ckpt_names = os.listdir("./result/checkpoints")
+    # ckpt_names = os.listdir("./result/checkpoints")
     ckpt_paths = ["./result/checkpoints/" + name for name in ckpt_names]
     model = CheckptEnsemble(ckpt_paths)
     dm = RACEDataModule(
