@@ -73,7 +73,8 @@ conda activte [env]
 - [x] Hyper Parameter Tuning (Optuna)
   - [ ] More parameters
 - [x] Parallelism
-  - [x] FreeScale
+  - [x] FairShare
+  - [x] ~~DeepSpeed~~ (Unstable)
 - [x] Distributed (Will be done after ejection)
     - [x] DDP
     - [x] ~~Apex DDP~~ (Given up)
