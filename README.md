@@ -90,4 +90,4 @@ conda activte [env]
 - [x] ~~Find Best Seed~~ (Useless, there will be new datasets and pre-trained model on-site)
 - [x] Further Speedup Training Process
   - [x] ~~LongFormer~~ (Seems useless)
-  - [x] ~~Nvidia Bert~~ (Will be done in )
+  - [x] ~~Nvidia Bert~~ (Will be done in ejection)
