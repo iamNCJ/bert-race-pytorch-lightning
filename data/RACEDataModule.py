@@ -95,9 +95,9 @@ class RACEDataModule(pl.LightningDataModule):
             question_tokens = np.array(tokenizer(qa, add_special_tokens=False)['input_ids'])
             sentences = article.split('.')
             sentences = [s for s in sentences if s != '']
-            # sentences_tokens = np.array(tokenizer(sentences, add_special_tokens=False, truncation=True, max_length=25,
-            #                                       padding='max_length')['input_ids'])
-            sentences_tokens = np.array(tokenizer(sentences, add_special_tokens=False)['input_ids'])
+            sentences_tokens = np.array(tokenizer(sentences, add_special_tokens=False, truncation=True, max_length=25,
+                                                  padding='max_length')['input_ids'])
+            # sentences_tokens = np.array(tokenizer(sentences, add_special_tokens=False)['input_ids'])
             question_len = len(qa)
             sentences_len = len(sentences)
             sentence_scores = np.empty((sentences_len, question_len))
