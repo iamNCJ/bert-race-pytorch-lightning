@@ -1,5 +1,6 @@
 from functools import partial
 from typing import Optional, Dict
+from itertools import product
 
 import datasets
 import numpy as np
@@ -89,18 +90,38 @@ class RACEDataModule(pl.LightningDataModule):
         if use_sentence_selection:
             qa = [question + option for option in x["options"]]
 
-            question_tokens = np.array(tokenizer(qa, add_special_tokens=False, truncation=True, max_length=25,
-                                                 padding='max_length')['input_ids'])
+            # question_tokens = np.array(tokenizer(qa, add_special_tokens=False, truncation=True, max_length=25,
+            #                                      padding='max_length')['input_ids'])
+            question_tokens = np.array(tokenizer(qa, add_special_tokens=False)['input_ids'])
             sentences = article.split('.')
-            sentences_tokens = np.array(tokenizer(sentences, add_special_tokens=False, truncation=True, max_length=25,
-                                                  padding='max_length')['input_ids'])
-            sentence_scores = np.dot(sentences_tokens, question_tokens.T) / (np.linalg.norm(
-                sentences_tokens, axis=1).reshape(-1, 1) @ np.linalg.norm(
-                question_tokens, axis=1).reshape(1, -1))
+            sentences = [s for s in sentences if s != '']
+            # sentences_tokens = np.array(tokenizer(sentences, add_special_tokens=False, truncation=True, max_length=25,
+            #                                       padding='max_length')['input_ids'])
+            sentences_tokens = np.array(tokenizer(sentences, add_special_tokens=False)['input_ids'])
+            question_len = len(qa)
+            sentences_len = len(sentences)
+            sentence_scores = np.empty((sentences_len, question_len))
+            for (i, j) in product(range(sentences_len), range(question_len)):
+                a = np.array(sentences_tokens[i])
+                b = np.array(question_tokens[j])
+                a_dot_b = np.convolve(a, np.flip(b))
+                a_l2 = np.convolve(a**2, np.ones(b.shape))
+                b_l2 = np.convolve(np.ones(a.shape), b**2)
+                sentence_scores[i, j] = np.max(a_dot_b / np.sqrt(a_l2 * b_l2))
+            # sentence_scores = np.dot(sentences_tokens, question_tokens.T) / (np.linalg.norm(
+            #     sentences_tokens, axis=1).reshape(-1, 1) @ np.linalg.norm(
+            #     question_tokens, axis=1).reshape(1, -1))
             max_sentence_score = np.max(sentence_scores, axis=1)
             best_sentence_indices = max_sentence_score.argsort()[-best_k_sentences:][::-1]
+            final_indices = set()
+            for index in best_sentence_indices:
+                final_indices.add(index - 1)
+                final_indices.add(index)
+                final_indices.add(index + 1)
+            final_indices.discard(-1)
+            final_indices.discard(sentences_len)
 
-            article = '.'.join([sentences[i] for i in best_sentence_indices])
+            article = '.'.join([sentences[i] for i in sorted(final_indices)])
 
         question_len = len(tokenizer.tokenize(question))
 
