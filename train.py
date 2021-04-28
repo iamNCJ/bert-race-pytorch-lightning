@@ -33,7 +33,7 @@ if __name__ == '__main__':
     # )
     trainer = pl.Trainer(
         logger=tb_logger,
-        gpus=-1 if torch.cuda.is_available() else None,
+        gpus=1 if torch.cuda.is_available() else None,
         # callbacks=[checkpoint_callback],
         amp_backend='native',
         amp_level='O2',
