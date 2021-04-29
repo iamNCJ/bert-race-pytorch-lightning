@@ -8,6 +8,7 @@ import pytorch_lightning as pl
 import torch
 from torch.utils.data import DataLoader, RandomSampler, SequentialSampler
 from transformers import BertTokenizerFast
+from rouge_score import rouge_scorer
 
 
 class RACEDataModule(pl.LightningDataModule):
@@ -38,13 +39,14 @@ class RACEDataModule(pl.LightningDataModule):
         self.best_k_sentences = best_k_sentences
 
         self.tokenizer = BertTokenizerFast.from_pretrained(self.model_name_or_path, use_fast=True, do_lower_case=True)
+        self.scorer = rouge_scorer.RougeScorer(['rouge1', 'rouge2'], use_stemmer=True)
         self.dataset = None
 
     def setup(self, stage: Optional[str] = None):
         self.dataset = datasets.load_dataset(self.dataset_loader, self.task_name)
 
-        preprocessor = partial(self.preprocess, self.tokenizer, self.max_seq_length, self.use_sentence_selection,
-                               self.best_k_sentences)
+        preprocessor = partial(self.preprocess, self.tokenizer, self.scorer, self.max_seq_length,
+                               self.use_sentence_selection, self.best_k_sentences)
 
         for split in self.dataset.keys():
             self.dataset[split] = self.dataset[split].map(
@@ -81,7 +83,7 @@ class RACEDataModule(pl.LightningDataModule):
 
     # auto cache tokens
     @staticmethod
-    def preprocess(tokenizer: BertTokenizerFast, max_seq_length: int, use_sentence_selection: bool,
+    def preprocess(tokenizer: BertTokenizerFast, scorer: rouge_scorer, max_seq_length: int, use_sentence_selection: bool,
                    best_k_sentences: int, x: Dict) -> Dict:
         choices_features = []
         label_map = {"A": 0, "B": 1, "C": 2, "D": 3}
@@ -92,22 +94,18 @@ class RACEDataModule(pl.LightningDataModule):
 
             # question_tokens = np.array(tokenizer(qa, add_special_tokens=False, truncation=True, max_length=25,
             #                                      padding='max_length')['input_ids'])
-            question_tokens = np.array(tokenizer(qa, add_special_tokens=False)['input_ids'])
+            # question_tokens = np.array(tokenizer(qa, add_special_tokens=False)['input_ids'])
             sentences = article.split('.')
             sentences = [s for s in sentences if s != '']
-            sentences_tokens = np.array(tokenizer(sentences, add_special_tokens=False, truncation=True, max_length=25,
-                                                  padding='max_length')['input_ids'])
+            # sentences_tokens = np.array(tokenizer(sentences, add_special_tokens=False, truncation=True, max_length=25,
+            #                                       padding='max_length')['input_ids'])
             # sentences_tokens = np.array(tokenizer(sentences, add_special_tokens=False)['input_ids'])
             question_len = len(qa)
             sentences_len = len(sentences)
             sentence_scores = np.empty((sentences_len, question_len))
             for (i, j) in product(range(sentences_len), range(question_len)):
-                a = np.array(sentences_tokens[i])
-                b = np.array(question_tokens[j])
-                a_dot_b = np.convolve(a, np.flip(b))
-                a_l2 = np.convolve(a**2, np.ones(b.shape))
-                b_l2 = np.convolve(np.ones(a.shape), b**2)
-                sentence_scores[i, j] = np.max(a_dot_b / np.sqrt(a_l2 * b_l2))
+                scores = scorer.score(sentences[i], qa[j])
+                sentence_scores[i, j] = scores['rouge1'].precision + scores['rouge2'].precision
             # sentence_scores = np.dot(sentences_tokens, question_tokens.T) / (np.linalg.norm(
             #     sentences_tokens, axis=1).reshape(-1, 1) @ np.linalg.norm(
             #     question_tokens, axis=1).reshape(1, -1))
