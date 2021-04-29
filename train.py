@@ -21,7 +21,7 @@ if __name__ == '__main__':
         model_name_or_path='./model/bert-large-uncased',
         datasets_loader='./data/RACELocalLoader.py',
         train_batch_size=16,
-        max_seq_length=256,
+        max_seq_length=512,
         num_workers=8,
         num_preprocess_processes=96,
         use_sentence_selection=True,
@@ -34,12 +34,12 @@ if __name__ == '__main__':
     # )
     trainer = pl.Trainer(
         logger=tb_logger,
-        gpus=-1 if torch.cuda.is_available() else None,
+        gpus=1 if torch.cuda.is_available() else None,
         # callbacks=[checkpoint_callback],
         amp_backend='native',
         amp_level='O2',
         precision=16,
-        accelerator='ddp',
+        accelerator='horovod',
         gradient_clip_val=1.0,
         max_epochs=6,
         # plugins='ddp_sharded',
