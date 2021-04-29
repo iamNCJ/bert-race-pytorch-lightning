@@ -84,7 +84,7 @@ conda activte [env]
 - [ ] Model Tweak
   - [x] DCMN (Buggy)
   - [x] Sentence Selection
-  - [ ] Sliding Window
+  - [x] Sliding Window
   - [ ] Use features from previous layers
 - [x] Model Ensemble (Buggy, will be done after ejection)
 - [x] ~~Find Best Seed~~ (Useless, there will be new datasets and pre-trained model on-site)
