@@ -1,8 +1,12 @@
 # bert-race-pytorch-lightening
 
-bert for RACE with pytorch-lightening and transformer
+BERT for RACE with pytorch-lightening and transformer
 
-adopted from [ASC2021-RACE](https://github.com/ASC-Competition/ASC2021-RACE)
+Adopted from [ASC2021-RACE](https://github.com/ASC-Competition/ASC2021-RACE), also implemented [DCMN](https://arxiv.org/abs/1908.11511) ([reference code](https://github.com/Qzsl123/dcmn))
+
+This repo is for experimental purposes. In order to achieve the best performance on distributed systems, we ejected the code from pytorch-lightening to native pytorch and changed the model from the one implemented by huggingface to [Nvidia's](https://github.com/NVIDIA/DeepLearningExamples/tree/master/PyTorch/LanguageModeling/BERT).
+
+For the ejected version, check out [bert-race-nvidia](https://github.com/iamNCJ/bert-race-nvidia).
 
 ## File Structure
 
@@ -64,7 +68,7 @@ conda activte [env]
 > HOROVOD_NCCL_LIB=/usr/lib64/ HOROVOD_NCCL_INCLUDE=/usr/include/ HOROVOD_GPU_ALLREDUCE=NCCL HOROVOD_GPU_BROADCAST=NCCL HOROVOD_NCCL_LINK=SHARED pip install --no-cache-dir horovod
 > ```
 
-## TODO
+## Features
 
 - [x] PyTorch Lightening
 - [x] Transformer
@@ -81,7 +85,7 @@ conda activte [env]
 - [x] ~~Argparse~~ (Not that important)
 - [x] Inference & Answer Saving
 - [x] Hyper Parameter Tuning (Optuna)
-  - [ ] More parameters
+  - [x] More parameters (Will be done in ejection)
 - [x] Parallelism
   - [x] FairShare
   - [x] ~~DeepSpeed~~ (Unstable)
@@ -91,12 +95,12 @@ conda activte [env]
     - [x] ~~Apex + Horovod~~ (Given up)
 - [x] ~~Cross Validation~~ (Useless)
 - [x] ~~Data Augmentation~~ (Useless)
-- [ ] Model Tweak
-  - [x] DCMN (Buggy)
+- [x] Model Tweak
+  - [x] DCMN (Buggy & bad test result)
   - [x] Sentence Selection
   - [x] Sliding Window
   - [x] Rouge Score
-  - [ ] Use features from previous layers
+  - [x] ~~Use features from previous layers~~ (Useless)
 - [x] Model Ensemble (Buggy, will be done after ejection)
 - [x] ~~Find Best Seed~~ (Useless, there will be new datasets and pre-trained model on-site)
 - [x] Further Speedup Training Process
