@@ -85,6 +85,7 @@ conda activte [env]
   - [x] DCMN (Buggy)
   - [x] Sentence Selection
   - [x] Sliding Window
+  - [x] Rouge Score
   - [ ] Use features from previous layers
 - [x] Model Ensemble (Buggy, will be done after ejection)
 - [x] ~~Find Best Seed~~ (Useless, there will be new datasets and pre-trained model on-site)
