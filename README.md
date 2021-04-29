@@ -20,17 +20,27 @@ adopted from [ASC2021-RACE](https://github.com/ASC-Competition/ASC2021-RACE)
 │   │   ├── config.json
 │   │   ├── pytorch_model.bin
 │   │   └── vocab.txt
-│   └── BertForRace.py
+│   ├── BertForRace.py
+│   ├── BertLongAttention.py
+│   ├── BertPooler.py
+│   ├── CheckptEnsemble.py
+│   ├── DCMNForRace.py
+│   ├── FuseNet.py
+│   └── SSingleMatchNet.py
+├── plugins
+│   ├── ApexDDP.py
+│   └── ApexDDPAccelerator.py
 ├── result
 │   └── asc01
 ├── hp_optimize.py
 ├── train.py
+├── predict.py
 ├── README.md
 ├── requirements.txt
 └── LICENSE
 ```
 
-Please put the data and pre-trained model as above.
+Please put the data and pre-trained model into `data` and `model` as above.
 
 ## Environment
 
