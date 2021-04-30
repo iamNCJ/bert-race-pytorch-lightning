@@ -11,14 +11,14 @@ if __name__ == '__main__':
     tb_logger = pl_loggers.TensorBoardLogger('./result/asc01/')
     pl.seed_everything(42)
     model = ALBERTForRace(
-        pretrained_model='albert-xxlarge-v2',
+        pretrained_model='albert-large-v2',
         learning_rate=2e-5,
         num_train_epochs=20,
         train_batch_size=4,
         train_all=True,
     )
     dm = RACEDataModuleForALBERT(
-        model_name_or_path='albert-xxlarge-v2',
+        model_name_or_path='albert-large-v2',
         datasets_loader='./data/RACELocalLoader.py',
         train_batch_size=4,
         max_seq_length=512,
