@@ -2,16 +2,16 @@ from typing import Any, List
 
 import pytorch_lightning as pl
 import torch
-from transformers import BertConfig, BertForMultipleChoice, AdamW, get_linear_schedule_with_warmup
+from transformers import AlbertConfig, AlbertForMultipleChoice, AdamW, get_linear_schedule_with_warmup
 
 from data.RACEDataModule import RACEDataModule
 from model.BertLongAttention import BertLongAttention
 
 
-class BertForRace(pl.LightningModule):
+class ALBERTForRace(pl.LightningModule):
     def __init__(
             self,
-            pretrained_model: str = 'bert-large-uncased',
+            pretrained_model: str = 'albert-large-uncased',
             learning_rate: float = 2e-5,
             gradient_accumulation_steps: int = 1,
             num_train_epochs: float = 3.0,
@@ -23,8 +23,8 @@ class BertForRace(pl.LightningModule):
             use_longformer: bool = False,
     ):
         super().__init__()
-        self.config = BertConfig.from_pretrained(pretrained_model, num_choices=4)
-        self.model = BertForMultipleChoice.from_pretrained(pretrained_model, config=self.config)
+        self.config = AlbertConfig.from_pretrained(pretrained_model, num_choices=4)
+        self.model = AlbertForMultipleChoice.from_pretrained(pretrained_model, config=self.config)
 
         if not train_all:
             for param in self.model.bert.parameters():
@@ -185,7 +185,7 @@ class BertForRace(pl.LightningModule):
 
 
 if __name__ == '__main__':
-    model = BertForRace()
+    model = ALBERTForRace()
     dm = RACEDataModule()
     trainer = pl.Trainer(
         gpus=-1 if torch.cuda.is_available() else None,
