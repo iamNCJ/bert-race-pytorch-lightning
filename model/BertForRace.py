@@ -144,6 +144,7 @@ class BertForRace(pl.LightningModule):
             input_ids=batch['input_ids'].reshape(batch['input_ids'].shape[0], 4, -1),
             token_type_ids=batch['token_type_ids'].reshape(batch['token_type_ids'].shape[0], 4, -1),
             attention_mask=batch['attention_mask'].reshape(batch['attention_mask'].shape[0], 4, -1),
+            position_ids=batch['position_ids'].reshape(batch['attention_mask'].shape[0], 4, -1),
             labels=batch['label'],
         )
         labels_hat = torch.argmax(outputs.logits, dim=1)
