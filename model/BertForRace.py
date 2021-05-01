@@ -123,7 +123,9 @@ class BertForRace(pl.LightningModule):
         )
 
         scheduler = get_constant_schedule_with_warmup(
-            optimizer, num_warmup_steps=self.warmup_steps, num_training_steps=self.total_steps
+            optimizer,
+            num_warmup_steps=self.warmup_steps,
+            # num_training_steps=self.total_steps
         )
         scheduler = {
             'scheduler': scheduler,
