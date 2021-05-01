@@ -17,12 +17,12 @@ class RACEDataModule(pl.LightningDataModule):
             model_name_or_path: str = 'bert-large-uncased',  # './vocab.txt'
             datasets_loader: str = 'race',  # 'RACELocalLoader.py'
             task_name: str = 'all',
-            max_seq_length: int = 512,
+            max_seq_length: int = 640,
             train_batch_size: int = 32,
             eval_batch_size: int = 32,
             num_workers: int = 8,
             num_preprocess_processes: int = 8,
-            use_sentence_selection: bool = True,
+            use_sentence_selection: bool = False,
             best_k_sentences: int = 5,
             **kwargs
     ):
@@ -54,6 +54,7 @@ class RACEDataModule(pl.LightningDataModule):
                 # batched=True,
                 remove_columns=['example_id'],
                 num_proc=self.num_preprocess_processes,
+                keep_in_memory=True,
             )
             self.dataset[split].set_format(type='torch',
                                            columns=['input_ids', 'token_type_ids', 'attention_mask', 'article_len',
@@ -122,6 +123,9 @@ class RACEDataModule(pl.LightningDataModule):
             article = '.'.join([sentences[i] for i in sorted(final_indices)])
 
         question_len = len(tokenizer.tokenize(question))
+        max_repeat_time = max_seq_length // 512 + 1
+        position_ids = np.concatenate([np.arange(0, 512)] * max_repeat_time)[0:max_seq_length]
+        position_ids = np.vstack([position_ids] * 4)
 
         option: str
         for option in x["options"]:
@@ -146,6 +150,7 @@ class RACEDataModule(pl.LightningDataModule):
             inputs['article_len'] = int(np.where(token_type_ids == 1)[1][0]) - 2
             # inputs['question_len'] = question_len
             inputs['option_len'] = option_len
+            # inputs['position_ids'] = position_ids[0:max_seq_length]
 
             choices_features.append(inputs)
 
@@ -157,6 +162,7 @@ class RACEDataModule(pl.LightningDataModule):
             "input_ids": torch.cat([cf["input_ids"] for cf in choices_features]).reshape(-1),
             "attention_mask": torch.cat([cf["attention_mask"] for cf in choices_features]).reshape(-1),
             "token_type_ids": torch.cat([cf["token_type_ids"] for cf in choices_features]).reshape(-1),
+            "position_ids": torch.tensor(position_ids).reshape(-1),
             "article_len": torch.tensor([cf["article_len"] for cf in choices_features]).long(),
             "question_len": torch.tensor([question_len] * 4).long(),
             # "question_len": torch.Tensor([cf["question_len"] for cf in choices_features]),
