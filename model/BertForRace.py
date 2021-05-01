@@ -2,7 +2,7 @@ from typing import Any, List
 
 import pytorch_lightning as pl
 import torch
-from transformers import BertConfig, BertForMultipleChoice, AdamW, get_linear_schedule_with_warmup
+from transformers import BertConfig, BertForMultipleChoice, AdamW, get_constant_schedule_with_warmup
 
 from data.RACEDataModule import RACEDataModule
 from model.BertLongAttention import BertLongAttention
@@ -122,7 +122,7 @@ class BertForRace(pl.LightningModule):
             lr=self.learning_rate
         )
 
-        scheduler = get_linear_schedule_with_warmup(
+        scheduler = get_constant_schedule_with_warmup(
             optimizer, num_warmup_steps=self.warmup_steps, num_training_steps=self.total_steps
         )
         scheduler = {
