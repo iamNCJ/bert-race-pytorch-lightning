@@ -26,7 +26,7 @@ class BertForRace(pl.LightningModule):
         super().__init__()
         self.config = BertConfig.from_pretrained(pretrained_model, num_choices=4)
         self.model = BertForMultipleChoice.from_pretrained(pretrained_model, config=self.config)
-        self.model.bert.dropout = nn.Dropout(0.5)
+        # self.model.bert.dropout = nn.Dropout(0.5)
 
         if not train_all:
             for param in self.model.bert.parameters():
