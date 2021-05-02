@@ -2,7 +2,6 @@ from typing import Any, List
 
 import pytorch_lightning as pl
 import torch
-import torch.nn as nn
 from transformers import BertConfig, BertForMultipleChoice, AdamW, get_constant_schedule_with_warmup
 
 from data.RACEDataModule import RACEDataModule
