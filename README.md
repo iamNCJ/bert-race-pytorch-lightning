@@ -96,10 +96,10 @@ conda activte [env]
 - [x] ~~Cross Validation~~ (Useless)
 - [x] ~~Data Augmentation~~ (Useless)
 - [x] Model Tweak
-  - [x] DCMN (Buggy & bad test result)
-  - [x] Sentence Selection
-  - [x] Sliding Window
-  - [x] Rouge Score
+  - [x] DCMN (***Bad test result*** && buggy now, I'm not going to debug it anymore, if anyone wants to use it, please checkout a working commit [#1df19a5](https://github.com/iamNCJ/bert-race-pytorch-lightening/tree/1df19a519e5113a4985cb8a10e586754941d0a33))
+  - [x] Sentence Selection (Bad result)
+  - [x] Sliding Window (Bad result)
+  - [x] Rouge Score (small improvement on short sequences)
   - [x] ~~Use features from previous layers~~ (Useless)
 - [x] Model Ensemble (Buggy, will be done after ejection)
 - [x] ~~Find Best Seed~~ (Useless, there will be new datasets and pre-trained model on-site)
