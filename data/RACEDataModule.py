@@ -14,8 +14,8 @@ from rouge_score import rouge_scorer
 class RACEDataModule(pl.LightningDataModule):
     def __init__(
             self,
-            model_name_or_path: str = 'bert-large-uncased',  # './vocab.txt'
-            datasets_loader: str = 'race',  # 'RACELocalLoader.py'
+            model_name_or_path: str = 'bert-large-uncased',
+            datasets_loader: str = 'race',
             task_name: str = 'all',
             max_seq_length: int = 640,
             train_batch_size: int = 32,
