@@ -68,7 +68,10 @@ class DUMAForRace(pl.LightningModule):
         self.config = BertConfig.from_pretrained(pretrained_model, num_choices=4)
         self.bert = BertModel.from_pretrained(pretrained_model, config=self.config)
         self.duma = DUMALayer(d_model_size=self.config.hidden_size, num_heads=self.config.num_attention_heads)
-        self.dropout = nn.Dropout(self.config.hidden_dropout_prob)
+        # self.dropout = nn.Dropout(self.config.hidden_dropout_prob)
+        self.dropouts = nn.ModuleList([
+            nn.Dropout(0.5) for _ in range(5)
+        ])
         self.classifier = nn.Linear(2 * self.config.hidden_size, 1)
         # self.model.bert.dropout = nn.Dropout(0.5)
 
@@ -181,8 +184,14 @@ class DUMAForRace(pl.LightningModule):
         enc_output_qa = enc_output_qa.view(-1, enc_output_qa.size(-1))
         enc_output_p = enc_output_p.view(-1, enc_output_p.size(-1))
         fused_output = torch.cat([enc_output_qa, enc_output_p], dim=1)
-        fused_output = self.dropout(fused_output)
-        logits = self.classifier(fused_output)
+        # fused_output = self.dropout(fused_output)
+        for i, dropout in enumerate(self.dropouts):
+            if i == 0:
+                logits = self.classifier(dropout(fused_output))
+            else:
+                logits += self.classifier(dropout(fused_output))
+        # logits = self.classifier(fused_output)
+        logits = logits / len(self.dropouts)
         reshaped_logits = logits.view(-1, num_choices)
 
         loss = None
