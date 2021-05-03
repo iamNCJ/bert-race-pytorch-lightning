@@ -96,7 +96,7 @@ conda activte [env]
 - [x] ~~Cross Validation~~ (Useless)
 - [x] ~~Data Augmentation~~ (Useless)
 - [x] Model Tweak
-  - [x] DCMN (***Bad test result*** && buggy now, I'm not going to debug it anymore, if anyone wants to use it, please checkout a working commit [#1df19a5](https://github.com/iamNCJ/bert-race-pytorch-lightening/tree/1df19a519e5113a4985cb8a10e586754941d0a33))
+  - [x] DCMN (***Bad test result (acc around 60 only, far lower than the paper's result)*** && buggy now, I'm not going to debug it anymore, if anyone wants to use it, please checkout a working commit [#1df19a5](https://github.com/iamNCJ/bert-race-pytorch-lightening/tree/1df19a519e5113a4985cb8a10e586754941d0a33))
   - [x] Sentence Selection (Bad result)
   - [x] Sliding Window (Bad result)
   - [x] Rouge Score (small improvement on short sequences)
