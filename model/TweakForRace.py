@@ -143,7 +143,7 @@ class TweakForRace(pl.LightningModule):
                             outputs.hidden_states[24]])[:, :1, :].view(4, batch_size, 1, 1024)
         atten = torch.sum(ht_cls * self.weights.view(4, 1, 1, 1), dim=[1, 3])
         atten = F.softmax(atten.view(-1), dim=0)
-        feature = torch.sum(ht_cls * atten.view(13, 1, 1, 1), dim=[0, 2])
+        feature = torch.sum(ht_cls * atten.view(4, 1, 1, 1), dim=[0, 2])
         # fused_output = self.dropout(fused_output)
         for i, dropout in enumerate(self.dropouts):
             if i == 0:
