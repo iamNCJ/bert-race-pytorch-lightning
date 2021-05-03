@@ -25,7 +25,7 @@ if __name__ == '__main__':
         max_seq_length=128,
         num_workers=8,
         num_preprocess_processes=96,
-        use_sentence_selection=True,
+        use_sentence_selection=False,
         best_k_sentences=5,
     )
     # checkpoint_callback = ModelCheckpoint(
