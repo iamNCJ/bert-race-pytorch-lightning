@@ -180,9 +180,9 @@ class DUMAForRace(pl.LightningModule):
         enc_output_qa, enc_output_p = self.duma(qa_seq_output, p_seq_output, qa_mask, p_mask)
         enc_output_qa = enc_output_qa.view(-1, enc_output_qa.size(-1))
         enc_output_p = enc_output_p.view(-1, enc_output_p.size(-1))
-        pooled_output = torch.cat([enc_output_qa, enc_output_p], dim=1)
-        pooled_output = self.dropout(pooled_output)
-        logits = self.classifier(pooled_output)
+        fused_output = torch.cat([enc_output_qa, enc_output_p], dim=1)
+        fused_output = self.dropout(fused_output)
+        logits = self.classifier(fused_output)
         reshaped_logits = logits.view(-1, num_choices)
 
         loss = None
