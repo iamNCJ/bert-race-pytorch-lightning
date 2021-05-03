@@ -178,8 +178,8 @@ class DUMAForRace(pl.LightningModule):
             return_dict=return_dict,
         )
 
-        pooled_output = outputs[1]
-        qa_seq_output, p_seq_output, qa_mask, p_mask = separate_seq2(pooled_output, input_ids)
+        last_output = outputs.last_hidden_state
+        qa_seq_output, p_seq_output, qa_mask, p_mask = separate_seq2(last_output, input_ids)
         enc_output_qa, enc_output_p = self.duma(qa_seq_output, p_seq_output, qa_mask, p_mask)
         enc_output_qa = enc_output_qa.view(-1, enc_output_qa.size(-1))
         enc_output_p = enc_output_p.view(-1, enc_output_p.size(-1))
