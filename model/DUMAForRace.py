@@ -176,7 +176,13 @@ class DUMAForRace(pl.LightningModule):
         )
 
         pooled_output = outputs[1]
+        print(0)
+        print(pooled_output.shape)
         qa_seq_output, p_seq_output, qa_mask, p_mask = separate_seq2(pooled_output, input_ids)
+        print('00')
+        print(qa_seq_output.shape)
+        print('01')
+        print(p_seq_output.shape)
         enc_output_qa, enc_output_p = self.duma(qa_seq_output, p_seq_output, qa_mask, p_mask)
         print(1)
         print(enc_output_qa.shape)
