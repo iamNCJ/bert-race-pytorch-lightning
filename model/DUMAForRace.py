@@ -69,7 +69,7 @@ class DUMAForRace(pl.LightningModule):
         self.bert = BertModel.from_pretrained(pretrained_model, config=self.config)
         self.duma = DUMALayer(d_model_size=self.config.hidden_size, num_heads=self.config.num_attention_heads)
         self.dropout = nn.Dropout(self.config.hidden_dropout_prob)
-        self.classifier = nn.Linear(self.config.hidden_size, 1)
+        self.classifier = nn.Linear(2 * self.config.hidden_size, 1)
         # self.model.bert.dropout = nn.Dropout(0.5)
 
         if not train_all:
@@ -178,7 +178,7 @@ class DUMAForRace(pl.LightningModule):
         pooled_output = outputs[1]
         qa_seq_output, p_seq_output, qa_mask, p_mask = separate_seq2(pooled_output, input_ids)
         enc_output_qa, enc_output_p = self.duma(qa_seq_output, p_seq_output, qa_mask, p_mask)
-        pooled_output = torch.cat([enc_output_qa, enc_output_p], 1)
+        pooled_output = torch.cat([enc_output_qa, enc_output_p], dim=1)
         pooled_output = self.dropout(pooled_output)
         logits = self.classifier(pooled_output)
         reshaped_logits = logits.view(-1, num_choices)
