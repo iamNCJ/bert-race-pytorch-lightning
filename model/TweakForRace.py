@@ -138,9 +138,9 @@ class TweakForRace(pl.LightningModule):
             return_dict=return_dict,
         )
 
-        all_hidden_states = outputs.hidden_states[:, -4:]
         batch_size = input_ids.shape[0]
-        ht_cls = torch.cat(all_hidden_states)[:, :1, :].view(4, batch_size, 1, 1024)
+        ht_cls = torch.cat([outputs.hidden_states[21], outputs.hidden_states[22], outputs.hidden_states[23],
+                            outputs.hidden_states[24]])[:, :1, :].view(4, batch_size, 1, 1024)
         atten = torch.sum(ht_cls * self.weights.view(4, 1, 1, 1), dim=[1, 3])
         atten = F.softmax(atten.view(-1), dim=0)
         feature = torch.sum(ht_cls * atten.view(13, 1, 1, 1), dim=[0, 2])
