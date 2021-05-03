@@ -7,7 +7,7 @@ from torch.nn import CrossEntropyLoss
 from transformers import BertConfig, BertModel, AdamW, get_linear_schedule_with_warmup
 
 from data.RACEDataModule import RACEDataModule
-from model.BertPooler import BertPooler
+from transformers.models.bert.modeling_bert import BertPooler
 from model.FuseNet import FuseNet
 from model.SSingleMatchNet import SSingleMatchNet
 
