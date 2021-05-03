@@ -18,17 +18,20 @@ For the ejected version, check out [bert-race-nvidia](https://github.com/iamNCJ/
 │   │   ├── test
 │   │   └── train
 │   ├── RACEDataModule.py
+│   ├── RACEDataModuleForALBERT.py
 │   └── RACELocalLoader.py
 ├── model
 │   ├── bert-large-uncased
 │   │   ├── config.json
 │   │   ├── pytorch_model.bin
 │   │   └── vocab.txt
+│   ├── ALBERTForRace.py
 │   ├── BertForRace.py
 │   ├── BertLongAttention.py
 │   ├── BertPooler.py
 │   ├── CheckptEnsemble.py
 │   ├── DCMNForRace.py
+│   ├── DUMAForRace.py
 │   ├── FuseNet.py
 │   └── SSingleMatchNet.py
 ├── plugins
