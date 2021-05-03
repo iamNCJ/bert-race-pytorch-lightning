@@ -6,6 +6,7 @@ import torch.nn as nn
 from torch.nn import CrossEntropyLoss
 from transformers import BertConfig, BertModel, AdamW, get_constant_schedule_with_warmup
 from transformers.modeling_outputs import MultipleChoiceModelOutput
+from transformers.models.bert.modeling_bert import BertPooler
 from transformers.models.ctrl.modeling_ctrl import MultiHeadAttention
 
 
@@ -67,6 +68,7 @@ class DUMAForRace(pl.LightningModule):
         super().__init__()
         self.config = BertConfig.from_pretrained(pretrained_model, num_choices=4)
         self.bert = BertModel.from_pretrained(pretrained_model, config=self.config)
+        self.pooler = BertPooler(self.config)
         self.duma = DUMALayer(d_model_size=self.config.hidden_size, num_heads=self.config.num_attention_heads)
         # self.dropout = nn.Dropout(self.config.hidden_dropout_prob)
         self.dropouts = nn.ModuleList([
@@ -181,6 +183,8 @@ class DUMAForRace(pl.LightningModule):
         last_output = outputs.last_hidden_state
         qa_seq_output, p_seq_output, qa_mask, p_mask = separate_seq2(last_output, input_ids)
         enc_output_qa, enc_output_p = self.duma(qa_seq_output, p_seq_output, qa_mask, p_mask)
+        enc_output_qa = self.pooler(enc_output_qa)
+        enc_output_p = self.pooler(enc_output_p)
         enc_output_qa = enc_output_qa.view(-1, enc_output_qa.size(-1))
         enc_output_p = enc_output_p.view(-1, enc_output_p.size(-1))
         fused_output = torch.cat([enc_output_qa, enc_output_p], dim=1)
