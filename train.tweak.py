@@ -13,7 +13,8 @@ if __name__ == '__main__':
     model = TweakForRace(
         pretrained_model='./model/bert-large-uncased',
         learning_rate=2e-5,
-        num_train_epochs=20,
+        num_train_epochs=3,
+        warmup_proportion=0.1,
         train_batch_size=4,
         train_all=True,
         use_bert_adam=True,
