@@ -3,11 +3,11 @@ from typing import Any, List
 import pytorch_lightning as pl
 import torch
 import torch.nn as nn
-from torch.nn import CrossEntropyLoss
+import torch.nn.functional as F
+from torch.nn import CrossEntropyLoss, MultiheadAttention
 from transformers import BertConfig, BertModel, AdamW, get_linear_schedule_with_warmup
 from transformers.modeling_outputs import MultipleChoiceModelOutput
 from transformers.models.bert.modeling_bert import BertPooler
-from transformers.models.ctrl.modeling_ctrl import MultiHeadAttention
 
 
 def separate_seq2(sequence_output, flat_input_ids):
@@ -40,17 +40,19 @@ def separate_seq2(sequence_output, flat_input_ids):
 class DUMALayer(nn.Module):
     def __init__(self, d_model_size, num_heads):
         super(DUMALayer, self).__init__()
-        self.attn_qa = MultiHeadAttention(d_model_size, num_heads)
-        self.attn_p = MultiHeadAttention(d_model_size, num_heads)
+        self.attn_qa = MultiheadAttention(d_model_size, num_heads)
+        self.attn_p = MultiheadAttention(d_model_size, num_heads)
 
     def forward(self, qa_seq_representation, p_seq_representation, qa_mask=None, p_mask=None):
+        qa_seq_representation = qa_seq_representation.permute([1, 0, 2])
+        p_seq_representation = p_seq_representation.permute([1, 0, 2])
         enc_output_qa, _ = self.attn_qa(
-            v=qa_seq_representation, k=qa_seq_representation, q=p_seq_representation, mask=qa_mask
+            value=qa_seq_representation, key=qa_seq_representation, query=p_seq_representation, key_padding_mask=qa_mask
         )
         enc_output_p, _ = self.attn_p(
-            v=p_seq_representation, k=p_seq_representation, q=qa_seq_representation, mask=p_mask,
+            value=p_seq_representation, key=p_seq_representation, query=qa_seq_representation, key_padding_mask=p_mask
         )
-        return enc_output_qa, enc_output_p
+        return enc_output_qa.permute([1, 0, 2]), enc_output_p.permute([1, 0, 2])
 
 
 class DUMAForRace(pl.LightningModule):
@@ -68,8 +70,8 @@ class DUMAForRace(pl.LightningModule):
         super().__init__()
         self.config = BertConfig.from_pretrained(pretrained_model, num_choices=4)
         self.bert = BertModel.from_pretrained(pretrained_model, config=self.config)
-        self.pooler = BertPooler(self.config)
         self.duma = DUMALayer(d_model_size=self.config.hidden_size, num_heads=self.config.num_attention_heads)
+        self.pooler = BertPooler(self.config)
         # self.dropout = nn.Dropout(self.config.hidden_dropout_prob)
         self.dropouts = nn.ModuleList([
             nn.Dropout(0.5) for _ in range(5)
@@ -137,17 +139,17 @@ class DUMAForRace(pl.LightningModule):
         return [optimizer], [scheduler]
 
     def forward(
-        self,
-        input_ids=None,
-        attention_mask=None,
-        token_type_ids=None,
-        position_ids=None,
-        head_mask=None,
-        inputs_embeds=None,
-        labels=None,
-        output_attentions=None,
-        output_hidden_states=None,
-        return_dict=None,
+            self,
+            input_ids=None,
+            attention_mask=None,
+            token_type_ids=None,
+            position_ids=None,
+            head_mask=None,
+            inputs_embeds=None,
+            labels=None,
+            output_attentions=None,
+            output_hidden_states=None,
+            return_dict=None,
     ):
         r"""
         labels (:obj:`torch.LongTensor` of shape :obj:`(batch_size,)`, `optional`):
@@ -183,20 +185,15 @@ class DUMAForRace(pl.LightningModule):
         last_output = outputs.last_hidden_state
         qa_seq_output, p_seq_output, qa_mask, p_mask = separate_seq2(last_output, input_ids)
         enc_output_qa, enc_output_p = self.duma(qa_seq_output, p_seq_output, qa_mask, p_mask)
-        enc_output_qa = self.pooler(enc_output_qa)
-        enc_output_p = self.pooler(enc_output_p)
-        enc_output_qa = enc_output_qa.view(-1, enc_output_qa.size(-1))
-        enc_output_p = enc_output_p.view(-1, enc_output_p.size(-1))
         fused_output = torch.cat([enc_output_qa, enc_output_p], dim=1)
-        # fused_output = self.dropout(fused_output)
+        pooled_output = self.pooler(fused_output)
         for i, dropout in enumerate(self.dropouts):
             if i == 0:
-                logits = self.classifier(dropout(fused_output))
+                logits = self.classifier(dropout(pooled_output))
             else:
-                logits += self.classifier(dropout(fused_output))
-        # logits = self.classifier(fused_output)
+                logits += self.classifier(dropout(pooled_output))
         logits = logits / len(self.dropouts)
-        reshaped_logits = logits.view(-1, num_choices)
+        reshaped_logits = F.softmax(logits.view(-1, 2), dim=1)
 
         loss = None
         if labels is not None:
