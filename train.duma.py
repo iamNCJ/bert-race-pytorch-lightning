@@ -14,18 +14,18 @@ if __name__ == '__main__':
         pretrained_model='./model/bert-large-uncased',
         learning_rate=2e-5,
         num_train_epochs=20,
-        train_batch_size=32,
+        train_batch_size=4,
         train_all=True,
         use_bert_adam=True,
     )
     dm = RACEDataModule(
         model_name_or_path='./model/bert-large-uncased',
         datasets_loader='./data/RACELocalLoader.py',
-        train_batch_size=32,
-        max_seq_length=128,
+        train_batch_size=4,
+        max_seq_length=512,
         num_workers=8,
-        num_preprocess_processes=96,
-        use_sentence_selection=True,
+        num_preprocess_processes=48,
+        use_sentence_selection=False,
         best_k_sentences=5,
     )
     # checkpoint_callback = ModelCheckpoint(
@@ -42,7 +42,7 @@ if __name__ == '__main__':
         precision=16,
         accelerator='ddp',
         gradient_clip_val=1.0,
-        max_epochs=6,
+        max_epochs=3,
         plugins='ddp_sharded',
         val_check_interval=0.2,
         # limit_train_batches=0.1,
