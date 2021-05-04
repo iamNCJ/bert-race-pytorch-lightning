@@ -12,13 +12,13 @@ from transformers.models.bert.modeling_bert import BertPooler
 
 def separate_seq2(sequence_output, flat_input_ids):
     qa_seq_output = sequence_output.new(sequence_output.size()).zero_()
-    qa_mask = torch.zeros((sequence_output.shape[0], sequence_output.shape[1]),
-                          device=sequence_output.device,
-                          dtype=torch.int64)
-    p_seq_output = sequence_output.new(sequence_output.size()).zero_()
-    p_mask = torch.zeros((sequence_output.shape[0], sequence_output.shape[1]),
+    qa_mask = torch.ones((sequence_output.shape[0], sequence_output.shape[1]),
                          device=sequence_output.device,
-                         dtype=torch.int64)
+                         dtype=torch.bool)
+    p_seq_output = sequence_output.new(sequence_output.size()).zero_()
+    p_mask = torch.ones((sequence_output.shape[0], sequence_output.shape[1]),
+                        device=sequence_output.device,
+                        dtype=torch.bool)
     for i in range(flat_input_ids.size(0)):
         # 0   1 2 3 4   5 6 7 8
         # cls a b c sep x y z sep
@@ -31,9 +31,9 @@ def separate_seq2(sequence_output, flat_input_ids):
                 sep_lst.append(idx)
         assert len(sep_lst) == 2
         qa_seq_output[i, :sep_lst[0] - 1] = sequence_output[i, 1:sep_lst[0]]
-        qa_mask[i, :sep_lst[0] - 1] = 1
+        qa_mask[i, :sep_lst[0] - 1] = 0
         p_seq_output[i, :sep_lst[1] - sep_lst[0] - 1] = sequence_output[i, sep_lst[0] + 1: sep_lst[1]]
-        p_mask[i, :sep_lst[1] - sep_lst[0] - 1] = 1
+        p_mask[i, :sep_lst[1] - sep_lst[0] - 1] = 0
     return qa_seq_output, p_seq_output, qa_mask, p_mask
 
 
@@ -193,7 +193,7 @@ class DUMAForRace(pl.LightningModule):
             else:
                 logits += self.classifier(dropout(pooled_output))
         logits = logits / len(self.dropouts)
-        reshaped_logits = F.softmax(logits.view(-1, 2), dim=1)
+        reshaped_logits = F.softmax(logits.view(-1, num_choices), dim=1)
 
         loss = None
         if labels is not None:
