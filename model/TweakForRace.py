@@ -7,8 +7,6 @@ import torch.nn.functional as F
 from torch.nn import CrossEntropyLoss
 from transformers import BertConfig, BertModel, AdamW, get_constant_schedule_with_warmup
 from transformers.modeling_outputs import MultipleChoiceModelOutput
-from transformers.models.bert.modeling_bert import BertPooler
-from transformers.models.ctrl.modeling_ctrl import MultiHeadAttention
 
 
 class TweakForRace(pl.LightningModule):
