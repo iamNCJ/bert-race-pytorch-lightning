@@ -7,7 +7,6 @@ import torch.nn.functional as F
 from torch.nn import CrossEntropyLoss, MultiheadAttention
 from transformers import BertConfig, BertModel, AdamW, get_linear_schedule_with_warmup
 from transformers.modeling_outputs import MultipleChoiceModelOutput
-from transformers.models.bert.modeling_bert import BertPooler
 
 
 def separate_seq2(sequence_output, flat_input_ids):
@@ -71,13 +70,10 @@ class DUMAForRace(pl.LightningModule):
         self.config = BertConfig.from_pretrained(pretrained_model, num_choices=4)
         self.bert = BertModel.from_pretrained(pretrained_model, config=self.config)
         self.duma = DUMALayer(d_model_size=self.config.hidden_size, num_heads=self.config.num_attention_heads)
-        self.pooler = BertPooler(self.config)
-        # self.dropout = nn.Dropout(self.config.hidden_dropout_prob)
         self.dropouts = nn.ModuleList([
             nn.Dropout(0.5) for _ in range(5)
         ])
-        self.classifier = nn.Linear(2 * self.config.hidden_size, 1)
-        # self.model.bert.dropout = nn.Dropout(0.5)
+        self.classifier = nn.Linear(self.config.hidden_size, 1)
 
         if not train_all:
             for param in self.bert.parameters():
@@ -186,7 +182,7 @@ class DUMAForRace(pl.LightningModule):
         qa_seq_output, p_seq_output, qa_mask, p_mask = separate_seq2(last_output, input_ids)
         enc_output_qa, enc_output_p = self.duma(qa_seq_output, p_seq_output, qa_mask, p_mask)
         fused_output = torch.cat([enc_output_qa, enc_output_p], dim=1)
-        pooled_output = self.pooler(fused_output)
+        pooled_output = torch.mean(fused_output, dim=1)
         for i, dropout in enumerate(self.dropouts):
             if i == 0:
                 logits = self.classifier(dropout(pooled_output))
