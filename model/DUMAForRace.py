@@ -4,7 +4,7 @@ import pytorch_lightning as pl
 import torch
 import torch.nn as nn
 from torch.nn import CrossEntropyLoss
-from transformers import BertConfig, BertModel, AdamW, get_constant_schedule_with_warmup
+from transformers import BertConfig, BertModel, AdamW, get_linear_schedule_with_warmup
 from transformers.modeling_outputs import MultipleChoiceModelOutput
 from transformers.models.bert.modeling_bert import BertPooler
 from transformers.models.ctrl.modeling_ctrl import MultiHeadAttention
@@ -124,10 +124,10 @@ class DUMAForRace(pl.LightningModule):
             lr=self.learning_rate
         )
 
-        scheduler = get_constant_schedule_with_warmup(
+        scheduler = get_linear_schedule_with_warmup(
             optimizer,
             num_warmup_steps=self.warmup_steps,
-            # num_training_steps=self.total_steps
+            num_training_steps=self.total_steps
         )
         scheduler = {
             'scheduler': scheduler,
