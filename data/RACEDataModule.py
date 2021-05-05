@@ -24,6 +24,7 @@ class RACEDataModule(pl.LightningDataModule):
             num_preprocess_processes: int = 8,
             use_sentence_selection: bool = False,
             best_k_sentences: int = 5,
+            add_article_info: bool = True,
             **kwargs
     ):
         super().__init__()
@@ -37,6 +38,7 @@ class RACEDataModule(pl.LightningDataModule):
         self.num_preprocess_processes = num_preprocess_processes
         self.use_sentence_selection = use_sentence_selection
         self.best_k_sentences = best_k_sentences
+        self.add_article_info = add_article_info
 
         self.tokenizer = BertTokenizerFast.from_pretrained(self.model_name_or_path, use_fast=True, do_lower_case=True)
         self.scorer = rouge_scorer.RougeScorer(['rouge1', 'rouge2'], use_stemmer=True)
@@ -46,7 +48,7 @@ class RACEDataModule(pl.LightningDataModule):
         self.dataset = datasets.load_dataset(self.dataset_loader, self.task_name)
 
         preprocessor = partial(self.preprocess, self.tokenizer, self.scorer, self.max_seq_length,
-                               self.use_sentence_selection, self.best_k_sentences)
+                               self.use_sentence_selection, self.best_k_sentences, self.add_article_info)
 
         for split in self.dataset.keys():
             self.dataset[split] = self.dataset[split].map(
@@ -85,7 +87,7 @@ class RACEDataModule(pl.LightningDataModule):
     # auto cache tokens
     @staticmethod
     def preprocess(tokenizer: BertTokenizerFast, scorer: rouge_scorer, max_seq_length: int, use_sentence_selection: bool,
-                   best_k_sentences: int, x: Dict) -> Dict:
+                   best_k_sentences: int, add_article_info: bool, x: Dict) -> Dict:
         choices_features = []
         label_map = {"A": 0, "B": 1, "C": 2, "D": 3}
         question = x["question"]
@@ -122,6 +124,8 @@ class RACEDataModule(pl.LightningDataModule):
 
             article = '.'.join([sentences[i] for i in sorted(final_indices)])
 
+        if add_article_info:
+            article = ''.join([f'{i + 1} ' + para for i, para in enumerate(article.split('\n'))])
         question_len = len(tokenizer.tokenize(question))
         max_repeat_time = max_seq_length // 512 + 1
         position_ids = np.concatenate([np.arange(0, 512)] * max_repeat_time)[0:max_seq_length]
