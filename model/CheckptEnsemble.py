@@ -19,6 +19,8 @@ class CheckptEnsemble(pl.LightningModule):
         outputs = [model(inputs) for model in self.models]
         return outputs
 
+        
+
     def predict_step(self, batch, batch_idx):
         outputs = self(
             input_ids=batch['input_ids'].reshape(batch['input_ids'].shape[0], 4, -1),
