@@ -79,8 +79,8 @@ class RACEDataModuleForTinyChoice(pl.LightningDataModule):
     @staticmethod
     def preprocess(tokenizer: BertTokenizerFast, max_seq_length: int, x: Dict) -> Dict:
         label_map = {"A": 0, "B": 1, "C": 2, "D": 3}
-        all_input_ids = np.zeros(640)
-        attention_mask = np.zeros(640)
+        all_input_ids = np.zeros(640, dtype=int)
+        attention_mask = np.zeros(640, dtype=int)
         qa_input_ids = tokenizer(f'[SEP] {x["question"]}' + ' [SEP] [CLS] '.join([''] + x['options']) + ' [SEP]',
                                  add_special_tokens=False)['input_ids']
         article_input_ids = tokenizer(x['article'], truncation=True, max_length=min(511, 640 - len(qa_input_ids)),
@@ -92,8 +92,8 @@ class RACEDataModuleForTinyChoice(pl.LightningDataModule):
         cls_indices = np.where(np.array(all_input_ids) == 101)[0]
         assert len(cls_indices) == 4
         relative_position_ids = np.arange(512)
-        position_ids = np.empty((len(all_input_ids)), dtype=int)
-        token_type_ids = np.ones((len(all_input_ids)), dtype=int)
+        position_ids = np.empty(640, dtype=int)
+        token_type_ids = np.ones(640, dtype=int)
         token_type_ids[0:sep_indices[0] + 1] = 0
         position_ids[0:sep_indices[0] + 1] = relative_position_ids[0:sep_indices[0] + 1]
         for i in range(5):
