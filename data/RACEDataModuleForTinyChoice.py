@@ -92,7 +92,7 @@ class RACEDataModuleForTinyChoice(pl.LightningDataModule):
         cls_indices = np.where(np.array(all_input_ids) == 101)[0]
         assert len(cls_indices) == 4
         relative_position_ids = np.arange(512)
-        position_ids = np.empty(640, dtype=int)
+        position_ids = np.zeros(640, dtype=int)
         token_type_ids = np.ones(640, dtype=int)
         token_type_ids[0:sep_indices[0] + 1] = 0
         position_ids[0:sep_indices[0] + 1] = relative_position_ids[0:sep_indices[0] + 1]
