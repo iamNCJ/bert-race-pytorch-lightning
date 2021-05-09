@@ -24,9 +24,7 @@ class TinyChoiceForRace(pl.LightningModule):
         super().__init__()
         self.config = BertConfig.from_pretrained(pretrained_model, num_choices=4)
         self.bert = BertModel.from_pretrained(pretrained_model, config=self.config)
-        self.dropouts = nn.ModuleList([
-            nn.Dropout(0.5) for _ in range(5)
-        ])
+        self.dropout = nn.Dropout(0.9)
         self.classifier = nn.Linear(self.config.hidden_size, 1)
 
         if not train_all:
