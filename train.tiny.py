@@ -13,14 +13,14 @@ if __name__ == '__main__':
         pretrained_model='./model/bert-large-uncased',
         learning_rate=2e-5,
         num_train_epochs=20,
-        train_batch_size=16,
+        train_batch_size=8,
         train_all=True,
         use_bert_adam=True,
     )
     dm = RACEDataModuleForTinyChoice(
         model_name_or_path='./model/bert-large-uncased',
         datasets_loader='./data/RACELocalLoader.py',
-        train_batch_size=16,
+        train_batch_size=8,
         num_workers=8,
         num_preprocess_processes=48,
     )
