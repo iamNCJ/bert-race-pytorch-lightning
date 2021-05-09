@@ -139,17 +139,12 @@ class TinyChoiceForRace(pl.LightningModule):
             last_output[i] = hidden_state[indices[i]]
         last_output = last_output.reshape(-1, last_output.shape[-1])
         pooled_output = self.dropout(last_output)
-        print(pooled_output.shape)
         logits = self.classifier(pooled_output)
-        print(logits.shape)
         reshaped_logits = logits.view(-1, num_choices)
 
         loss = None
         if labels is not None:
             loss_fct = CrossEntropyLoss()
-            print(reshaped_logits.shape)
-            print(labels)
-            print(labels.shape)
             loss = loss_fct(reshaped_logits, labels)
 
         if not return_dict:
