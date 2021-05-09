@@ -2,7 +2,7 @@ import pytorch_lightning as pl
 import torch
 from pytorch_lightning import loggers as pl_loggers
 
-from data.RACEDataModule import RACEDataModule
+from data.RACEDataModuleForTinyChoice import RACEDataModuleForTinyChoice
 from model.TinyChoiceForRace import TinyChoiceForRace
 
 
@@ -17,7 +17,7 @@ if __name__ == '__main__':
         train_all=True,
         use_bert_adam=True,
     )
-    dm = RACEDataModule(
+    dm = RACEDataModuleForTinyChoice(
         model_name_or_path='./model/bert-large-uncased',
         datasets_loader='./data/RACELocalLoader.py',
         train_batch_size=4,

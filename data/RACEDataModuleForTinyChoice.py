@@ -1,6 +1,5 @@
 from functools import partial
 from typing import Optional, Dict
-from itertools import product
 
 import datasets
 import numpy as np
