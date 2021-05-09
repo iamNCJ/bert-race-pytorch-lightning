@@ -11,7 +11,7 @@ if __name__ == '__main__':
     pl.seed_everything(42)
     model = TinyChoiceForRace(
         pretrained_model='./model/bert-large-uncased',
-        learning_rate=2e-5,
+        learning_rate=1e-5,
         num_train_epochs=20,
         train_batch_size=8,
         train_all=True,
