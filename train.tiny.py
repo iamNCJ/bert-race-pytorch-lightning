@@ -38,7 +38,7 @@ if __name__ == '__main__':
         precision=16,
         accelerator='ddp',
         gradient_clip_val=1.0,
-        max_epochs=6,
+        max_epochs=3,
         plugins='ddp_sharded',
         val_check_interval=0.2,
         # limit_train_batches=0.1,
