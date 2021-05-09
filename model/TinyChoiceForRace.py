@@ -1,5 +1,6 @@
 from typing import Any, List
 
+import numpy as np
 import pytorch_lightning as pl
 import torch
 import torch.nn as nn
@@ -133,7 +134,7 @@ class TinyChoiceForRace(pl.LightningModule):
         )
 
         last_hidden_state = outputs.last_hidden_state  # [:, indices]
-        last_output = torch.empty((last_hidden_state.shape[0], 4, last_hidden_state.shape[-1]))
+        last_output = last_hidden_state[:, np.range(4)] # torch.empty((last_hidden_state.shape[0], 4, last_hidden_state.shape[-1]))
         indices = indices.view(-1, num_choices)
         for i, hidden_state in enumerate(last_hidden_state):
             last_output[i] = hidden_state[indices[i]]
