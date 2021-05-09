@@ -3,8 +3,7 @@ from typing import Any, List
 import pytorch_lightning as pl
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
-from torch.nn import CrossEntropyLoss, MultiheadAttention
+from torch.nn import CrossEntropyLoss
 from transformers import BertConfig, BertModel, AdamW, get_linear_schedule_with_warmup
 from transformers.modeling_outputs import MultipleChoiceModelOutput
 
@@ -42,6 +41,7 @@ class TinyChoiceForRace(pl.LightningModule):
         self.train_batch_size = train_batch_size
         self.warmup_proportion = warmup_proportion
         self.use_bert_adam = use_bert_adam
+        self.num_choices = num_choices
 
         self.warmup_steps = 0
         self.total_steps = 0
