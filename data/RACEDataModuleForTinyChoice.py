@@ -79,7 +79,6 @@ class RACEDataModuleForTinyChoice(pl.LightningDataModule):
     # auto cache tokens
     @staticmethod
     def preprocess(tokenizer: BertTokenizerFast, max_seq_length: int, x: Dict) -> Dict:
-        choices_features = []
         label_map = {"A": 0, "B": 1, "C": 2, "D": 3}
         all_input_ids = np.zeros(640)
         attention_mask = np.zeros(640)
@@ -92,6 +91,7 @@ class RACEDataModuleForTinyChoice(pl.LightningDataModule):
         attention_mask[0:len(article_input_ids) + len(qa_input_ids)] = 1
         sep_indices = np.where(np.array(all_input_ids) == 102)[0]
         cls_indices = np.where(np.array(all_input_ids) == 101)[0]
+        assert len(cls_indices) == 4
         relative_position_ids = np.arange(512)
         position_ids = np.empty((len(all_input_ids)), dtype=int)
         token_type_ids = np.ones((len(all_input_ids)), dtype=int)
