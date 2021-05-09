@@ -134,7 +134,7 @@ class TinyChoiceForRace(pl.LightningModule):
             return_dict=return_dict,
         )
 
-        last_output = outputs.hidden_state[:, indices]
+        last_output = outputs.last_hidden_state[:, indices]
         pooled_output = self.dropout(last_output)
         logits = self.classifier(pooled_output)
         reshaped_logits = logits.view(-1, num_choices)
