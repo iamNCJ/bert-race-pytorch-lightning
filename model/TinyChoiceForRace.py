@@ -142,7 +142,7 @@ class TinyChoiceForRace(pl.LightningModule):
         if labels is not None:
             loss_fct = CrossEntropyLoss()
             print(reshaped_logits.shape)
-            print(reshaped_logits)
+            print(labels)
             print(labels.shape)
             loss = loss_fct(reshaped_logits, labels)
 
