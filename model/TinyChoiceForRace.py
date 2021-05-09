@@ -132,7 +132,11 @@ class TinyChoiceForRace(pl.LightningModule):
             return_dict=return_dict,
         )
 
-        last_output = outputs.last_hidden_state[:, indices]
+        last_hidden_state = outputs.last_hidden_state  # [:, indices]
+        last_output = torch.empty((last_hidden_state.shape[0], 4, last_hidden_state.shape[-1]))
+        indices = indices.view(-1, num_choices)
+        for i, hidden_state in enumerate(last_hidden_state):
+            last_output[i] = hidden_state[indices[i]]
         last_output = last_output.reshape(-1, last_output.shape[-1])
         pooled_output = self.dropout(last_output)
         print(pooled_output.shape)
