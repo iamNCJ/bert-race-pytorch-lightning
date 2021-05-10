@@ -2,7 +2,7 @@
 
 BERT for RACE with pytorch-lightening and transformer
 
-Adopted from [ASC2021-RACE](https://github.com/ASC-Competition/ASC2021-RACE), also implemented [DCMN](https://arxiv.org/abs/1908.11511) ([reference code](https://github.com/Qzsl123/dcmn)) and [DUMA](https://arxiv.org/abs/2001.09415)
+Implemented [DCMN](https://arxiv.org/abs/1908.11511) ([reference code](https://github.com/Qzsl123/dcmn)) and [DUMA](https://arxiv.org/abs/2001.09415)
 
 This repo is for experimental purposes. In order to achieve the best performance on distributed systems, we ejected the code from pytorch-lightening to native pytorch and changed the model from the one implemented by huggingface to [Nvidia's](https://github.com/NVIDIA/DeepLearningExamples/tree/master/PyTorch/LanguageModeling/BERT).
 
