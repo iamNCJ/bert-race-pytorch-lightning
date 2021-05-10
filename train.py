@@ -50,5 +50,5 @@ if __name__ == '__main__':
         # accumulate_grad_batches=2,
     )
     trainer.fit(model, dm)
-    torch.save(model.model, 'pytorch_model.bin')
+    torch.save(model.model.state_dict(), 'pytorch_model.bin')
     trainer.test(datamodule=dm)
