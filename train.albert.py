@@ -2,6 +2,7 @@ import pytorch_lightning as pl
 import torch
 from pytorch_lightning import loggers as pl_loggers
 # from pytorch_lightning.callbacks import ModelCheckpoint
+import logging
 
 from data.RACEDataModuleForALBERT import RACEDataModuleForALBERT
 from model.ALBERTForRace import ALBERTForRace
