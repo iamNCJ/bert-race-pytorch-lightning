@@ -1,7 +1,6 @@
 import pytorch_lightning as pl
 import torch
 from pytorch_lightning import loggers as pl_loggers
-# from pytorch_lightning.callbacks import ModelCheckpoint
 import logging
 import time
 
@@ -44,12 +43,6 @@ if __name__ == '__main__':
         use_sentence_selection=True,
         best_k_sentences=25,
     )
-
-    # checkpoint_callback = ModelCheckpoint(
-    #     dirpath='./result/checkpoints/',
-    #     filename='epoch{epoch:02d}',
-    #     save_top_k=-1,
-    # )
     trainer = pl.Trainer(
         logger=tb_logger,
         gpus=-1 if torch.cuda.is_available() else None,
