@@ -50,17 +50,28 @@ class RACEDataModule(pl.LightningDataModule):
         preprocessor = partial(self.preprocess, self.tokenizer, self.scorer, self.max_seq_length,
                                self.use_sentence_selection, self.best_k_sentences, self.add_article_info)
 
-        for split in self.dataset.keys():
-            self.dataset[split] = self.dataset[split].map(
-                preprocessor,
-                # batched=True,
-                remove_columns=['example_id'],
-                num_proc=self.num_preprocess_processes,
-                keep_in_memory=True,
-            )
-            self.dataset[split].set_format(type='torch',
-                                           columns=['input_ids', 'token_type_ids', 'attention_mask', 'position_ids',
-                                                    'article_len', 'question_len', 'option_len', 'label'])
+        if stage == 'fit':
+            for split in ['train', 'validation']:
+                self.dataset[split] = self.dataset[split].map(
+                    preprocessor,
+                    # batched=True,
+                    remove_columns=['example_id'],
+                    num_proc=self.num_preprocess_processes,
+                )
+                self.dataset[split].set_format(type='torch',
+                                               columns=['input_ids', 'token_type_ids', 'attention_mask', 'position_ids',
+                                                        'article_len', 'question_len', 'option_len', 'label'])
+        else:
+            for split in self.dataset.keys():
+                self.dataset[split] = self.dataset[split].map(
+                    preprocessor,
+                    # batched=True,
+                    remove_columns=['example_id'],
+                    num_proc=self.num_preprocess_processes,
+                )
+                self.dataset[split].set_format(type='torch',
+                                               columns=['input_ids', 'token_type_ids', 'attention_mask', 'position_ids',
+                                                        'article_len', 'question_len', 'option_len', 'label'])
 
     def prepare_data(self):
         datasets.load_dataset(self.dataset_loader, self.task_name)
@@ -86,7 +97,8 @@ class RACEDataModule(pl.LightningDataModule):
 
     # auto cache tokens
     @staticmethod
-    def preprocess(tokenizer: BertTokenizerFast, scorer: rouge_scorer, max_seq_length: int, use_sentence_selection: bool,
+    def preprocess(tokenizer: BertTokenizerFast, scorer: rouge_scorer, max_seq_length: int,
+                   use_sentence_selection: bool,
                    best_k_sentences: int, add_article_info: bool, x: Dict) -> Dict:
         choices_features = []
         label_map = {"A": 0, "B": 1, "C": 2, "D": 3}

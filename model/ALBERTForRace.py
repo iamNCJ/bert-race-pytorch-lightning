@@ -1,4 +1,5 @@
 from typing import Any, List
+import logging
 
 import pytorch_lightning as pl
 import torch
@@ -6,6 +7,11 @@ from transformers import AlbertConfig, AlbertForMultipleChoice, AdamW, get_linea
 
 from data.RACEDataModule import RACEDataModule
 from model.BertLongAttention import BertLongAttention
+
+logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
+                    datefmt='%m/%d/%Y %H:%M:%S',
+                    level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 class ALBERTForRace(pl.LightningModule):
@@ -100,6 +106,15 @@ class ALBERTForRace(pl.LightningModule):
             self.total_steps = int(len(train_loader.dataset)
                                    / self.train_batch_size / self.gradient_accumulation_steps * self.num_train_epochs)
             self.warmup_steps = int(self.total_steps * self.warmup_proportion)
+
+            train_examples = train_loader.dataset
+
+            num_train_steps = self.total_steps
+
+            logger.info("***** Running training *****")
+            logger.info("  Num examples = %d", len(train_examples))
+            logger.info("  Batch size = %d", self.train_batch_size)
+            logger.info("  Num steps = %d", num_train_steps)
 
     def configure_optimizers(self):
         # Prepare optimizer
