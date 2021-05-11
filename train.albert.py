@@ -3,6 +3,7 @@ import torch
 from pytorch_lightning import loggers as pl_loggers
 # from pytorch_lightning.callbacks import ModelCheckpoint
 import logging
+import time
 
 from data.RACEDataModuleForALBERT import RACEDataModuleForALBERT
 from model.ALBERTForRace import ALBERTForRace
@@ -45,7 +46,7 @@ if __name__ == '__main__':
         best_k_sentences=25,
     )
 
-    train_example = dm.dataset['train']
+    train_examples = dm.dataset['train']
 
     num_train_steps = int(len(train_examples) / train_batch_size / 1 * num_train_epochs)
 
