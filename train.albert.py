@@ -53,7 +53,7 @@ if __name__ == '__main__':
         accelerator='ddp',
         gradient_clip_val=1.0,
         max_epochs=num_train_epochs,
-        plugins='ddp_sharded',
+        # plugins='ddp_sharded',
         val_check_interval=0.2,
         # limit_train_batches=0.1,
         # limit_val_batches=0.1,
