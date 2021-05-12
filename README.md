@@ -1,6 +1,6 @@
-# bert-race-pytorch-lightening
+# bert-race-pytorch-lightning
 
-BERT for RACE with pytorch-lightening and transformer
+BERT for RACE with pytorch-lightning and transformer
 
 Implemented [DCMN](https://arxiv.org/abs/1908.11511) ([reference code](https://github.com/Qzsl123/dcmn)) and [DUMA](https://arxiv.org/abs/2001.09415)
 
