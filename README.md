@@ -1,5 +1,7 @@
 # bert-race-pytorch-lightning
 
+> This repo contains the code for ASC20-21 LE
+
 BERT for RACE with pytorch-lightning and transformer
 
 Implemented [DCMN](https://arxiv.org/abs/1908.11511) ([reference code](https://github.com/Qzsl123/dcmn)) and [DUMA](https://arxiv.org/abs/2001.09415)
